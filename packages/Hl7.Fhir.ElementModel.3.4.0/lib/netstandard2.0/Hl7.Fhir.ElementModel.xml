@@ -1,0 +1,943 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Hl7.Fhir.ElementModel</name>
+    </assembly>
+    <members>
+        <member name="M:Hl7.Fhir.ElementModel.ElementNode.ForPrimitive(System.Object)">
+            <summary>
+            Creates an implementation of ITypedElement that represents a primitive value
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ElementNode.TryConvertToElementValue(System.Object,System.Object@)">
+            <summary>
+            Converts a .NET primitive to the expected object value to use in the
+            value property of ITypedElement.
+            </summary>
+            <param name="value"></param>
+            <param name="primitiveValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ElementNode.CreateList(System.Object[])">
+            <summary>
+            Create a fixed length set of values (but also support variable number of parameter values)
+            </summary>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ElementNode.CreateList(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Create a variable list of values using an enumeration
+            - so doesn't have to be converted to an array in memory (issue with larger dynamic lists)
+            </summary>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ElementNode.importChild(Hl7.Fhir.Specification.IStructureDefinitionSummaryProvider,Hl7.Fhir.ElementModel.ElementNode,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Will update the child to reflect it being a child of this element, but will not yet add the child at any position within this element
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ElementNodeComparator.IsEqualTo(Hl7.Fhir.ElementModel.ITypedElement,Hl7.Fhir.ElementModel.ITypedElement)">
+            <summary>
+            Compares two <see cref="T:Hl7.Fhir.ElementModel.ITypedElement"/> trees.
+            </summary>
+            <param name="expected">The tree that contains the expected, "correct" data.</param>
+            <param name="actual">The tree to compare against the <paramref name="expected"/> tree.</param>
+            <returns>A <see cref="T:Hl7.Fhir.ElementModel.TreeComparisonResult"/> that summarizes the differences between the trees.</returns>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.ICdaInfoSupplier.XHtmlText">
+            <summary>
+            Retrieves the xHtml text of a cda logic model
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.IResourceTypeSupplier">
+            <summary>
+            This interface is implemented by FHIR parsers to represent the resource type indicator
+            found in the parsed data.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.IResourceTypeSupplier.ResourceType">
+            <summary>
+            Gets the resource type found at the location of the node in the source data (if any).
+            </summary>
+            <value>The value of resource type indicator (e.g. <c>resourceType</c> in json, or contained node in XML) or
+            <c>null</c> if such an indicator was not found.</value>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.IShortPathGenerator">
+            <summary>
+            This interface is implemented by implementers of <see cref="T:Hl7.Fhir.ElementModel.ITypedElement" /> to represent the short path
+            to an element.
+            </summary>
+            <remarks>There is a difference between the <see cref="P:Hl7.Fhir.ElementModel.ITypedElement.Location"/> and the short path. The
+            former always includes an index selector, even if the element does not repeat, whereas the short path
+            only uses index selectors when necessary. As an example, a <c>Location</c> would be <c>Patient.active[0]</c>,
+            whereas the short path for the same location would be <c>Patient.active</c>. For repeating nodes, the
+            location and the short path are the same.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.IShortPathGenerator.ShortPath">
+            <summary>
+            Gets the short path of the node the <see cref="T:Hl7.Fhir.ElementModel.ITypedElement"/> represents.
+            (any single cardinality nodes will be stripped of their [0] array indexer)
+            </summary>
+            <value>Returns the short path, which is a dotted path notation to the node</value>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.ISourceNode">
+            <summary>
+            A node within a tree of FHIR data.
+            </summary>
+            <remarks>
+            <para>This interface is typically implemented by a parser for one of the low-level serialization formats for FHIR, i.e.
+            FHIR xml/json/rdf or v3 XML. The interface does not depend on the availability of FHIR metadata and definitions
+            (in contrast to <see cref="T:Hl7.Fhir.ElementModel.ITypedElement" />), so the names of the nodes will have their type suffixes (for choice types) 
+            and all primitives values are represented as strings, instead of native objects.</para>
+            <para>Implementations of this interface that want to report errors while parsing should only do so on the 
+            <see cref="M:Hl7.Fhir.ElementModel.ISourceNode.Children(System.String)"/> function and <see cref="P:Hl7.Fhir.ElementModel.ISourceNode.Text"/> getter.</para>
+            </remarks>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.ISourceNode.Name">
+            <summary>
+            Gets the name of the node, e.g. "active", "valueQuantity".
+            </summary>
+            <remarks>Since the node has no type information, choice elements are represented as their 
+            name on the wire, possibly including the type suffix for choice elements.
+            </remarks>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.ISourceNode.Text">
+            <summary>
+            Gets the text of the primitive value of the node
+            </summary>
+            <value>Returns the raw textual value as represented in the serialization, or null if there is no value in this node.</value>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.ISourceNode.Location">
+            <summary>
+            Gets the location of this node within the tree of data.
+            </summary>
+            <value>A string of dot-separated names representing the path to the node within the tree, including indices
+            to distinguish repeated occurences of an element.</value>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ISourceNode.Children(System.String)">
+            <summary>
+            Enumerates the direct child nodes of the current node (if any).
+            </summary>
+            <param name="name">Optional. The name filter for the children. Can be omitted to not filter by name.</param>
+            <returns>The children of the node matching the given filter, or all children if no filter was specified.
+            If no children match the given filter, the function returns an empty enumerable.</returns>
+            <remarks>
+            <para>If the <paramref name="name"/>parameter ends in an asterix ('*'),
+            the function will return the children of which the name starts with the given name.</para>
+            <para>Repeating elements will always be returned consecutively.</para></remarks>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.ITypedElement">
+            <summary>
+            A element within a tree of typed FHIR data.
+            </summary>
+            <remarks>
+            This interface represents FHIR data as a tree of elements, including type information either present in 
+            the instance or derived from fully aware of the FHIR definitions and types
+            </remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ITypedElement.Children(System.String)">
+            <summary>
+            Enumerate the child nodes present in the source representation (if any)
+            </summary>
+            <param name="name">Return only the children with the given name.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.ITypedElement.Name">
+            <summary>
+            Name of the node, e.g. "active", "value".
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.ITypedElement.InstanceType">
+            <summary>
+            Type of the node. If a FHIR type, this is just a simple string, otherwise a StructureDefinition url for a type defined as a logical model.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.ITypedElement.Value">
+             <summary>
+             The value of the node (if it represents a primitive FHIR value)
+             </summary>
+             <remarks>
+             FHIR primitives are mapped to underlying C# types as follows:
+            
+             instant         Hl7.Fhir.ElementModel.Types.DateTime
+             time            Hl7.Fhir.ElementModel.Types.Time
+             date            Hl7.Fhir.ElementModel.Types.Date
+             dateTime        Hl7.Fhir.ElementModel.Types.DateTime
+             decimal         decimal
+             boolean         bool
+             integer         int
+             unsignedInt     int
+             positiveInt     int
+             long/integer64  long (name will be finalized in R5)
+             string          string
+             code            string
+             id              string
+             uri, oid, uuid, 
+             canonical, url  string
+             markdown        string
+             base64Binary    string (uuencoded)
+             xhtml           string
+             </remarks>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.ITypedElement.Location">
+            <summary>
+            An indication of the location of this node within the data represented by the <c>ITypedElement</c>.
+            </summary>
+            <remarks>The format of the location is the dotted name of the property, including indices to make
+            sure repeated occurences of an element can be distinguished. It needs to be sufficiently precise to aid 
+            the user in locating issues in the data.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.MaskingNode._includeAll">
+            <summary>
+            Set to true when a complex type property is mandatory so all its children need to be included
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.MaskingNodeSettings">
+            <summary>Configuration settings for the <see cref="T:Hl7.Fhir.ElementModel.MaskingNode"/> class.</summary>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.MaskingNodeSettings.PreserveBundleMode">
+            <summary>
+            The different ways in which Bundles are masked.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.MaskingNodeSettings.PreserveBundleMode.None">
+            <summary>
+            All Bundles (including nested) are masked like any other resource 
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.MaskingNodeSettings.PreserveBundleMode.Root">
+            <summary>
+            The Bundle at the root is preserved, nested bundles are masked
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.MaskingNodeSettings.PreserveBundleMode.All">
+            <summary>
+            All Bundles (including nested) are exempt from masking
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.MaskingNodeSettings.PreserveBundle">
+            <summary>
+            Determines how Bundles are masked.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.MaskingNodeSettings.IncludeMandatory">
+            <summary>
+            Include top-level mandatory elements, including all their children
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.MaskingNodeSettings.IncludeInSummary">
+            <summary>
+            Include all elements marked "in summary" in the definition of the element
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.MaskingNodeSettings.ExcludeNarrative">
+            <summary>
+            Exclude all elements of type "Narrative"
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.MaskingNodeSettings.ExcludeMarkdown">
+            <summary>
+            Exclude all elements of type "Markdown"
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.MaskingNodeSettings.IncludeAll">
+            <summary>
+            Start by including all elements
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.MaskingNodeSettings.IncludeElements">
+            <summary>
+            List of names op top-level elements to include, including their children
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.MaskingNodeSettings.ExcludeElements">
+            <summary>
+            List of top-level elements to exclude
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.MaskingNodeSettings.#ctor">
+            <summary>Default constructor. Creates a new <see cref="T:Hl7.Fhir.ElementModel.MaskingNodeSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.MaskingNodeSettings.#ctor(Hl7.Fhir.ElementModel.MaskingNodeSettings)">
+            <summary>Clone constructor. Generates a new <see cref="T:Hl7.Fhir.ElementModel.MaskingNodeSettings"/> instance initialized from the state of the specified instance.</summary>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.MaskingNodeSettings.CopyTo(Hl7.Fhir.ElementModel.MaskingNodeSettings)">
+            <summary>Copy all configuration settings to another instance.</summary>
+            <param name="other">Another <see cref="T:Hl7.Fhir.ElementModel.MaskingNodeSettings"/> instance.</param>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.MaskingNodeSettings.Clone">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.ElementModel.MaskingNodeSettings"/> object that is a copy of the current instance.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.MaskingNodeSettings.CreateDefault">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.ElementModel.MaskingNodeSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.ScopedNode.ParentResource">
+            <summary>
+            Represents the most direct resource parent in which the current node 
+            is located.
+            </summary>
+            <remarks>
+            When the node is the inital root, there is no parent.
+            </remarks>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.ScopedNode.ResourceContext">
+            <summary>
+            The %resource context, as defined by FHIRPath
+            </summary>
+            <remarks>
+            This is the original resource the current context is part of. When evaluating a datatype, 
+            this would be the resource the element is part of. Do not go past a root resource into a bundle, 
+            if it is contained in a bundle.
+            </remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ScopedNode.ParentResources">
+            <summary>
+            Get the list of container parents in a list, nearest parent first.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ScopedNode.Id">
+            <summary>
+            Returns the Id of the resource, if the current node is a resource
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNode.FromNode(Hl7.Fhir.ElementModel.ISourceNode,System.Boolean,System.Collections.Generic.IEnumerable{System.Type})">
+            <summary>
+            
+            </summary>
+            <param name="node"></param>
+            <param name="recursive"></param>
+            <param name="annotationsToCopy">Maybe: if null - copy all, if empty, copy none, else specifcy which</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.Children(System.Collections.Generic.IEnumerable{Hl7.Fhir.ElementModel.ISourceNode},System.String)">
+            <summary>
+            Returns the direct children of a set of nodes.
+            </summary>
+            <param name="node">A list of nodes.</param>
+            <param name="name"> Optional.The name filter for the children. Can be omitted to not filter by name.</param>
+            <returns>The children of all nodes passed into <paramref name="node"/>, aggregated into a single list.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.Descendants(Hl7.Fhir.ElementModel.ISourceNode)">
+            <summary>
+            Returns all descendants of a node.
+            </summary>
+            <param name="node">A node.</param>
+            <returns>The descendants (children and by recursion all children of the children) of the node passed into 
+            <paramref name="node"/></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.Descendants(System.Collections.Generic.IEnumerable{Hl7.Fhir.ElementModel.ISourceNode})">
+            <summary>
+            Returns all descendants of a set of nodes.
+            </summary>
+            <param name="nodes">A list of nodes.</param>
+            <returns>The descendants (children and by recursion all children of the children) of the node passed into 
+            <paramref name="nodes"/></returns>
+            <returns>The descendants of all nodes passed into <paramref name="nodes"/>, aggregated into a single list.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.DescendantsAndSelf(Hl7.Fhir.ElementModel.ISourceNode)">
+            <summary>
+            Returns a node and all descendants of that node.
+            </summary>
+            <param name="node">A node.</param>
+            <returns>The node and descendants (children and by recursion all children of the children) of the node passed into 
+            <paramref name="node"/></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.DescendantsAndSelf(System.Collections.Generic.IEnumerable{Hl7.Fhir.ElementModel.ISourceNode})">
+            <summary>
+            Returns nodes and all descendants of those nodes from a set of nodes.
+            </summary>
+            <param name="nodes">A list of nodes.</param>
+            <returns>The node and descendants (children and by recursion all children of the children) of all
+            nodes passed into <paramref name="nodes"/></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.Visit(Hl7.Fhir.ElementModel.ISourceNode,System.Action{System.Int32,Hl7.Fhir.ElementModel.ISourceNode})">
+            <summary>
+            Runs an action on all nodes in a tree of nodes.
+            </summary>
+            <param name="root">The root of the tree.</param>
+            <param name="visitor">The action to run on each node.</param>
+            <remarks>The function does a depth-first traversal of the tree, starting at the root. The action is
+            passed an integer representing the depth of the node in the tree, measured in steps from the node
+            to the root.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.Catch(Hl7.Fhir.ElementModel.ISourceNode,Hl7.Fhir.Utility.ExceptionNotificationHandler,System.Boolean)">
+            <summary>
+            Registers an <see cref="T:Hl7.Fhir.Utility.ExceptionNotificationHandler" /> with an <see cref="T:Hl7.Fhir.Utility.IExceptionSource"/>.
+            </summary>
+            <seealso cref="M:Hl7.Fhir.Utility.ExceptionSourceExtensions.Catch(Hl7.Fhir.Utility.IExceptionSource,Hl7.Fhir.Utility.ExceptionNotificationHandler,System.Boolean)"/>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.VisitAll(Hl7.Fhir.ElementModel.ISourceNode)">
+            <summary>
+            Visit all nodes in a tree while invoking the <see cref="P:Hl7.Fhir.ElementModel.ISourceNode.Text" /> getter. />
+            </summary>
+            <param name="root">The root of the tree to visit.</param>
+            <remarks>Since implementations of ISourceNode will report parsing errors when enumerating
+            children and getting their <see cref="P:Hl7.Fhir.ElementModel.ISourceNode.Text"/> getter, this will trigger all
+            parsing errors to be reported by the source.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.VisitAndCatch(Hl7.Fhir.ElementModel.ISourceNode)">
+            <summary>
+            Visits all nodes in a tree while catching any reported parsing errors. />
+            </summary>
+            <param name="root">The root of the tree to visit.</param>
+            <returns>The list of all exceptions reported while visiting the tree passed in
+            the <paramref name="root"/> argument.</returns>
+            <seealso cref="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.VisitAll(Hl7.Fhir.ElementModel.ISourceNode)"/>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.GetResourceTypeIndicator(Hl7.Fhir.ElementModel.ISourceNode)">
+            <summary>
+            Gets the <see cref="T:Hl7.Fhir.ElementModel.IResourceTypeSupplier" /> annotation from an <c>ISourceNode</c>
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.Annotations(Hl7.Fhir.ElementModel.ISourceNode,System.Type)">
+            <summary>
+            Gets specific annotations from the list of annotations on the node.
+            </summary>
+            <returns>All of the annotations of the given type, or an empty list if none were found.</returns>
+            <seealso cref="T:Hl7.Fhir.Utility.IAnnotated"/>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.Annotation``1(Hl7.Fhir.ElementModel.ISourceNode)">
+            <summary>
+            Gets a specific annotation from the list of annotations on the node.
+            </summary>
+            <returns>The first of the annotations of the type given by <typeparamref name="T"/>,
+            or an empty list if none were found.</returns>
+            <seealso cref="T:Hl7.Fhir.Utility.IAnnotated"/>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.ToTypedElement(Hl7.Fhir.ElementModel.ISourceNode,Hl7.Fhir.Specification.IStructureDefinitionSummaryProvider,System.String,Hl7.Fhir.ElementModel.TypedElementSettings)">
+            <summary>
+            Turns the <c>ISourceNode</c> into a <see cref="T:Hl7.Fhir.ElementModel.ITypedElement"/> by adding type information to it.
+            </summary>
+            <param name="node">The node containing the source information.</param>
+            <param name="provider">The provider which supplies type information.</param>
+            <param name="type">Optional. The type of the element at the root.</param>
+            <param name="settings"></param>
+            <returns>An <see cref="T:Hl7.Fhir.ElementModel.ITypedElement"/> that represents the data in the node, with type information
+            added to it.</returns>
+            <remarks>This extension method decorates the <c>ISourceNode</c> with a new instance of
+            an <see cref="T:Hl7.Fhir.ElementModel.TypedElementOnSourceNode"/>, passing on the parameters of this extension method.</remarks>
+            <seealso cref="T:Hl7.Fhir.ElementModel.ITypedElement"/>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.ToTypedElement(Hl7.Fhir.ElementModel.ISourceNode)">
+            <summary>
+            Adapting an <c>ISourceNode</c> to a <see cref="T:Hl7.Fhir.ElementModel.ITypedElement"/> without adding type information to it.
+            </summary>
+            <param name="node"></param>
+            <returns></returns>
+            <remarks>In contrast to <see cref="M:Hl7.Fhir.ElementModel.SourceNodeExtensions.ToTypedElement(Hl7.Fhir.ElementModel.ISourceNode,Hl7.Fhir.Specification.IStructureDefinitionSummaryProvider,System.String,Hl7.Fhir.ElementModel.TypedElementSettings)"/>,
+            this method simulates an <c>ITypedElement</c> on top of an <c>ISourceNode</c>, without adding type information to
+            it. This is used internally in a few places in the API, where the component using the <c>ITypedNode</c> is aware it
+            cannot depend on type information being present, but should normally not be used.
+            </remarks>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.TypedElementSettings.TypeErrorMode">
+            <summary>
+            Ways to handle missing type information for an element.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.TypedElementSettings.TypeErrorMode.Report">
+            <summary>
+            Raise an error when no type information is available.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.TypedElementSettings.TypeErrorMode.Ignore">
+            <summary>
+            Ignore the element, it will not be represented in the tree.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.TypedElementSettings.TypeErrorMode.Passthrough">
+            <summary>
+            The element will be represented in the tree, without type information.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.TypedElementSettings.ErrorMode">
+            <summary>
+            Determines how to proceed when an element is encountered for which there is no type information available.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.TypedElementSettings.TruncateDateTimeToDate">
+            <summary>
+            Allow to parse a FHIR dateTime values into an element of type date.
+            </summary>
+            <remarks>
+            Needed for backward compatibility with old parser for resources which were saved and considered valid in the past.
+            </remarks>>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.TypedElementSettings.#ctor">
+            <summary>Default constructor. Creates a new <see cref="T:Hl7.Fhir.ElementModel.TypedElementSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.TypedElementSettings.#ctor(Hl7.Fhir.ElementModel.TypedElementSettings)">
+            <summary>Clone constructor. Generates a new <see cref="T:Hl7.Fhir.ElementModel.TypedElementSettings"/> instance initialized from the state of the specified instance.</summary>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.TypedElementSettings.CopyTo(Hl7.Fhir.ElementModel.TypedElementSettings)">
+            <summary>Copy all configuration settings to another instance.</summary>
+            <param name="other">Another <see cref="T:Hl7.Fhir.ElementModel.TypedElementSettings"/> instance.</param>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.TypedElementSettings.Clone">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.ElementModel.TypedElementSettings"/> object that is a copy of the current instance.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.TypedElementSettings.CreateDefault">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.ElementModel.TypedElementSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Any.TryGetSystemTypeByName(System.String,System.Type@)">
+            <summary>
+            Returns the concrete subclass of Any that is used to represent the
+            type given in parmameter <paramref name="name"/>.
+            </summary>
+            <param name="name"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Any.TryConvert(System.Object,Hl7.Fhir.ElementModel.Types.Any@)">
+            <summary>
+            Try to convert a .NET instance to a Cql/FhirPath Any-based type.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Any.Convert(System.Object)">
+            <summary>
+            Converts a .NET instance to a Cql/FhirPath Any-based type.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.Types.Date.Precision">
+            <summary>
+            The precision of the date available. 
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.Types.Date.Offset">
+            <summary>
+            The span of time ahead/behind UTC
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.Types.Date.HasOffset">
+            <summary>
+            Whether the time specifies an offset to UTC
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Date.ToDateTimeOffset(System.Int32,System.Int32,System.Int32,System.TimeSpan)">
+            <summary>
+            Converts the date to a full DateTimeOffset instance.
+            </summary>
+            <param name="hours"></param>
+            <param name="minutes"></param>
+            <param name="seconds"></param>
+            <param name="defaultOffset">Offset used when the datetime does not specify one.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Date.ToDateTimeOffset(System.Int32,System.Int32,System.Int32,System.Int32,System.TimeSpan)">
+            <summary>
+            Converts the date to a full DateTimeOffset instance.
+            </summary>
+            <param name="hours"></param>
+            <param name="minutes"></param>
+            <param name="seconds"></param>
+            <param name="milliseconds"></param>
+            <param name="defaultOffset">Offset used when the datetime does not specify one.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Date.tryParse(System.String,Hl7.Fhir.ElementModel.Types.Date@)">
+            <summary>
+            Converts the date to a full DateTimeOffset instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Date.Equals(System.Object)">
+            <summary>
+            Determines if two dates are equal according to CQL equality rules.
+            </summary>
+            <returns>returns true if the values are both dates, have the same precision and each date component is exactly the same. 
+            Dates with timezones are normalized to zulu before comparison is done.</returns>
+            <remarks>See <see cref="M:Hl7.Fhir.ElementModel.Types.Date.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)"/> for more details.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Date.CompareTo(System.Object)">
+            <summary>
+            Compare two dates according to CQL equality rules
+            </summary>
+            <remarks>See <see cref="M:Hl7.Fhir.ElementModel.Types.Date.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)"/> for more details.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Date.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)">
+            <summary>
+            Compares two dates according to CQL ordering rules.
+            </summary> 
+            <param name="other"></param>
+            <returns>An <see cref="M:Hl7.Fhir.Utility.Result.Ok``1(``0)"/> with an integer value representing the reseult of the comparison: 0 if this and other are equal, 
+            -1 if this is smaller than other and +1 if this is bigger than other, or the other is null. If the values are incomparable
+            this function returns a <see cref="M:Hl7.Fhir.Utility.Result.Fail``1(System.Exception)"/> with the reason why the comparison between the two values was impossible.
+            </returns>
+            <remarks>The comparison is performed by considering each precision in order, beginning with years. 
+            If the values are the same, comparison proceeds to the next precision; 
+            if the values are different, the comparison stops and the result is false. If one input has a value 
+            for the precision and the other does not, the comparison stops and the values cannot be compared; if neither
+            input has a value for the precision, or the last precision has been reached, the comparison stops
+            and the result is true.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.Types.DateTime.Offset">
+            <summary>
+            The span of time ahead/behind UTC
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.Types.DateTime.Precision">
+            <summary>
+            The precision of the date and time available. 
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.Types.DateTime.HasOffset">
+            <summary>
+            Whether the time specifies an offset to UTC
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.DateTime.ToDateTimeOffset(System.TimeSpan)">
+            <summary>
+            Converts the datetime to a full DateTimeOffset instance.
+            </summary>
+            <param name="defaultOffset">Offset used when the datetime does not specify one.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.DateTime.Equals(System.Object)">
+            <summary>
+            Compare two datetimes based on CQL equality rules
+            </summary>
+            <returns>returns true if the values have the same precision, and each date component is exactly the same. Datetimes with timezones are normalized
+            to zulu before comparison is done. Throws an <see cref="T:System.ArgumentException"/> if the arguments differ in precision.</returns>
+            <remarks>See <see cref="M:Hl7.Fhir.ElementModel.Types.DateTime.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)"/> for more details.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.DateTime.CompareTo(System.Object)">
+            <summary>
+            Compare two datetimes based on CQL equality rules
+            </summary>
+            <remarks>See <see cref="M:Hl7.Fhir.ElementModel.Types.DateTime.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)"/> for more details.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.DateTime.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)">
+            <summary>
+            Compares two datetimes according to CQL ordering rules.
+            </summary> 
+            <param name="other"></param>
+            <returns>An <see cref="T:Hl7.Fhir.Utility.Ok`1"/> with an integer value representing the reseult of the comparison: 0 if this and other are equal, 
+            -1 if this is smaller than other and +1 if this is bigger than other, or the other is null. If the values are incomparable
+            this function returns a <see cref="T:Hl7.Fhir.Utility.Fail`1"/> with the reason why the comparison between the two values was impossible.
+            </returns>
+            <remarks>The comparison is performed by considering each precision in order, beginning with years. 
+            If the values are the same, comparison proceeds to the next precision; 
+            if the values are different, the comparison stops and the result is false. If one input has a value 
+            for the precision and the other does not, the comparison stops and the values cannot be compared; if neither
+            input has a value for the precision, or the last precision has been reached, the comparison stops
+            and the result is true.</remarks>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.DateTimePrecision.Fraction">
+            <summary>
+            Milliseconds and fractions
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Decimal.Equals(System.Object)">
+            <summary>
+            Determines if two decimals are equal according to CQL equality rules.
+            </summary>
+            <remarks>The same as <see cref="M:Hl7.Fhir.ElementModel.Types.Decimal.Equals(Hl7.Fhir.ElementModel.Types.Any,Hl7.Fhir.ElementModel.Types.DecimalComparison)" />
+            with comparison type <see cref="F:Hl7.Fhir.ElementModel.Types.Decimal.CQL_EQUALS_COMPARISON"/>. For decimals, CQL and .NET equality
+            rules are aligned.
+            </remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Decimal.Equals(Hl7.Fhir.ElementModel.Types.Any,Hl7.Fhir.ElementModel.Types.DecimalComparison)">
+            <summary>
+            Determines equality of two decimals using the specified type of decimal comparsion.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Decimal.Scale(System.Decimal,System.Boolean)">
+            <summary>
+            Calculates the scale of a decimal, which is the number of digits after the decimal separator.
+            </summary>
+            <param name="d"></param>
+            <param name="ignoreTrailingZeroes">If true, trailing zeroes are ignored when counting
+            the number of digits after the separator.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Decimal.CompareTo(System.Object)">
+            <summary>
+            Compares two decimals according to CQL equality rules
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+            <remarks>For decimals, CQL and .NET comparison rules are aligned.</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.Types.DecimalComparison">
+            <summary>Specifies the comparison rules for decimals.</summary>
+            <remarks>Options are aligned with the equality and equivalence  operations for decimals
+            defined in the CQL specification. See https://cql.hl7.org/09-b-cqlreference.html#comparison-operators-4 
+            for more details.
+            </remarks>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.DecimalComparison.IgnoreTrailingZeroes">
+            <summary>
+            Trailing zeroes after the decimal are ignored in determining precision.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.DecimalComparison.RoundToSmallestScale">
+            <summary>
+            Comparison is done on values rounded to the scale of the
+            least precise operand. Implies <see cref="F:Hl7.Fhir.ElementModel.Types.DecimalComparison.IgnoreTrailingZeroes" />.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Integer.Equals(System.Object)">
+            <summary>
+            Determines if two integers are equal according to CQL equality rules.
+            </summary>
+            <remarks>For integers, CQL and .NET equality rules are aligned.
+            </remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Integer.CompareTo(System.Object)">
+            <summary>
+            Compares two integers, according to CQL equality rules
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+            <remarks>For integers, CQL and .NET comparison rules are aligned.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Long.Equals(System.Object)">
+            <summary>
+            Determines if two 64-bit integers are equal according to CQL equality rules.
+            </summary>
+            <remarks>For 64-bits integers, CQL and .NET equality rules are aligned.
+            </remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Long.CompareTo(System.Object)">
+            <summary>
+            Compares two 64-bit integers according to CQL equality rules
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+            <remarks>For 64-bit integers, CQL and .NET comparison rules are aligned.</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.Types.QuantityUnitSystem">
+            <summary>
+            UCUM does not contain codes for calendar units. To support both the UCUM 'a' and 'mo' and
+            the calender year and month, we keep track of multiple coding system for units.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.QuantityUnitSystem.UCUM">
+            <summary>
+            Unit is taken from the UCUM coding system (default).
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.QuantityUnitSystem.CalendarDuration">
+            <summary>
+            Unit is taken from the set of calendar units (year or month)
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Quantity.ForCalendarDuration(System.Decimal,System.String)">
+            <summary>
+            Construct a non-UCUM calendar duration (currently only 'year' and 'month').
+            </summary>
+            <param name="value"></param>
+            <param name="calendarUnit"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Quantity.TryParseTimeUnit(System.String,System.String@,System.Boolean@)">
+            <summary>
+            Parses the literal time units either to UCUM or to a non-UCUM calendar unit.
+            </summary>
+            <param name="unitLiteral">The time unit as found in a quantity literal</param>
+            <param name="unit">The parsed unit, either as a UCUM code or a non-UCUM calender unit.</param>
+            <param name="isCalendarUnit">True is this is a non-UCUM calendar unit.</param>
+            <returns>True if this is a recognized time unit literal, false otherwise.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Quantity.Equals(System.Object)">
+            <summary>
+            Compare two quantities based on CQL equality rules.
+            </summary>
+            <param name="obj"></param>
+            <returns>true if the values have comparable units, and the converted values are the same according to decimal equality rules.
+            </returns>
+            <remarks>See <see cref="M:Hl7.Fhir.ElementModel.Types.Quantity.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)"/> for more details.
+            According to the .NET documentation Equals(object obj) cannot throw
+            an exception. That is why we make sure that a bool is always returned. See 
+            <see href="https://docs.microsoft.com/en-us/dotnet/api/system.object.equals"/></remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Quantity.TryEquals(Hl7.Fhir.ElementModel.Types.Any,Hl7.Fhir.ElementModel.Types.QuantityComparison)">
+            <summary>
+            Compares two quantities according to CQL equivalence rules.
+            </summary>
+            <remarks>For time-valued quantities, the comparison of
+            calendar durations and definite quantity durations above seconds is determined by the <paramref name="comparisonType"/></remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Quantity.CompareTo(System.Object)">
+            <summary>
+            Compare two datetimes based on CQL equivalence rules
+            </summary>
+            <remarks>See <see cref="M:Hl7.Fhir.ElementModel.Types.Quantity.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)"/> for more details.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Quantity.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)">
+            <summary>
+            Compares two quantities according to CQL ordering rules.
+            </summary> 
+            <param name="other"></param>
+            <returns>the result of the comparison: 0 if this and other are equal, 
+            -1 if this is smaller than other and +1 if this is bigger than other.</returns>
+            <remarks>the dimensions of each quantity must be the same, but not necessarily the unit. For example, units of 'cm' and 'm' can be compared, 
+            but units of 'cm2' and 'cm' cannot. The comparison will be made using the most granular unit of either input. 
+            Quantities with invalid units cannot be compared.</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.Types.QuantityComparison">
+            <summary>Specifies the comparison rules for quantities.</summary>
+            <remarks>Options are aligned with the equality and equivalence  operations for quantities
+            defined in the CQL specification. See https://cql.hl7.org/09-b-cqlreference.html#comparison-operators-4 
+            for more details.
+            </remarks>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.QuantityComparison.CompareCalendarUnits">
+            <summary>
+            For time-valued quantities: calendar durations and definite quantity durations are considered comparable (and equivalent).
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.String.Equals(Hl7.Fhir.ElementModel.Types.Any,Hl7.Fhir.ElementModel.Types.StringComparison)">
+            <summary>
+            Compares two strings according to CQL equivalence rules.
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.ElementModel.Types.StringComparison">
+            <summary>Specifies the comparison rules for string.</summary>
+            <remarks>Options are aligned with the equality and equivalence  operations for string
+            defined in the CQL specification. See https://cql.hl7.org/09-b-cqlreference.html#comparison-operators-4 
+            for more details.
+            </remarks>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.StringComparison.Unicode">
+            <summary>
+            Both strings are the same based on the Unicode values for the individual 
+            characters in the strings.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.StringComparison.IgnoreCase">
+            <summary>
+            Ignore casing when comparing strings
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.StringComparison.NormalizeWhitespace">
+            <summary>
+            All whitespace characters are treated as equivalent.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.ElementModel.Types.StringComparison.IgnoreDiacritics">
+            <summary>
+            Ignore all Unicode non-spacing characters when comparing string
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.Types.Time.Offset">
+            <summary>
+            The span of time ahead/behind UTC
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.Types.Time.Precision">
+            <summary>
+            The precision of the time available. 
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.ElementModel.Types.Time.HasOffset">
+            <summary>
+            Whether the time specifies an offset to UTC
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Time.ToDateTimeOffset(System.Int32,System.Int32,System.Int32,System.TimeSpan)">
+            <summary>
+            Converts the time to a full DateTimeOffset instance.
+            </summary>
+            <param name="year">Year used to turn a time into a date</param>
+            <param name="month">Month used to turn a time into a date</param>
+            <param name="day">Day used to turn a time into a date</param>
+            <param name="defaultOffset">Offset used when the time does not specify one.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Time.Equals(System.Object)">
+            <summary>
+            Compare two times based on CQL equality rules
+            </summary>
+            <returns>returns true if the values have the same precision, and each date component is exactly the same. Datetimes with timezones are normalized
+            to zulu before comparison is done. Throws an <see cref="T:System.ArgumentException"/> if the arguments differ in precision.</returns>
+            <remarks>See <see cref="M:Hl7.Fhir.ElementModel.Types.Time.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)"/> for more details.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Time.CompareTo(System.Object)">
+            <summary>
+            Compare two times based on CQL equality rules
+            </summary>
+            <remarks>See <see cref="M:Hl7.Fhir.ElementModel.Types.Time.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)"/> for more details.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.Types.Time.TryCompareTo(Hl7.Fhir.ElementModel.Types.Any)">
+            <summary>
+            Compares two times according to CQL ordering rules.
+            </summary> 
+            <param name="other"></param>
+            <returns>An <see cref="T:Hl7.Fhir.Utility.Ok`1"/> with an integer value representing the reseult of the comparison: 0 if this and other are equal, 
+            -1 if this is smaller than other and +1 if this is bigger than other, or the other is null. If the values are incomparable
+            this function returns a <see cref="T:Hl7.Fhir.Utility.Fail`1"/> with the reason why the comparison between the two values was impossible.
+            </returns>
+            <remarks>The comparison is performed by considering each precision in order, beginning with hours. 
+            If the values are the same, comparison proceeds to the next precision; 
+            if the values are different, the comparison stops and the result is false. If one input has a value 
+            for the precision and the other does not, the comparison stops and the values cannot be compared; if neither
+            input has a value for the precision, or the last precision has been reached, the comparison stops
+            and the result is true.</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.Serialization.BaseTypedElement">
+            <summary>
+            A base class for creating components wrapping another <see cref="T:Hl7.Fhir.ElementModel.ITypedElement"/> component.
+            </summary>
+            <remarks>
+            By default, all members of <see cref="T:Hl7.Fhir.ElementModel.ITypedElement"/> are forwarden to the instance passed in the
+            constructor, but any of the members can be overridden in the subclass.
+            </remarks>
+        </member>
+        <member name="F:Hl7.Fhir.Language.TypeSpecifier.PrimitiveTypes">
+            <summary>
+            This is the list of supported types for the primitive values in ITypedElement.Value
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Language.TypeSpecifier.ForNativeType(System.Type)">
+            <summary>
+            Maps a C# type to a known TypeSpecifier.
+            </summary>
+            <param name="dotNetType">Value to determine the type for.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.IElementDefinitionSummary.DefaultTypeName">
+            <summary>
+            Logical Models where a choice type is represented by ElementDefinition.representation = typeAttr might define a default type (elementdefinition-defaulttype extension). null in most cases.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.IElementDefinitionSummary.NonDefaultNamespace">
+            <summary>
+            This is the namespace used for the xml node representing this element.
+            Only need to be set if different from "http://hl7.org/fhir".
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.IElementDefinitionSummary.Representation">
+            <summary>
+            The kind of node used to represent this element in XML.
+            Default is <see cref="F:Hl7.Fhir.Specification.XmlRepresentation.XmlElement"/>.
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.IStructureDefinitionSummary">
+            <summary>
+            A class representing a complex type, with child elements. 
+            </summary>
+            <remarks>
+             In FHIR, this interface represents definitions of Resources, datatypes and BackboneElements. 
+             BackboneElements will have the TypeName set to "BackboneElement" (in resources) or "Element" (in datatypes)
+             and IsAbstract set to true.
+             </remarks>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.XmlRepresentation">
+            <summary>
+            Xml Serialization used for primitive values
+            </summary>
+        </member>
+    </members>
+</doc>

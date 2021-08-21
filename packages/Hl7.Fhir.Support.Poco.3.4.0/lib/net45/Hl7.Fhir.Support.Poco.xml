@@ -1,0 +1,3633 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Hl7.Fhir.Support.Poco</name>
+    </assembly>
+    <members>
+        <member name="P:Hl7.Fhir.ElementModel.PocoElementNode.FhirValue">
+            <summary>
+            This is only needed for search data extraction (and debugging)
+            to be able to read the values from the selected node (if a coding, so can get the value and system)
+            </summary>
+            <remarks>Will return null if on id, value, url (primitive attribute props in xml)</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ScopedNodeExtensions.MakeAbsolute(Hl7.Fhir.ElementModel.ScopedNode,Hl7.Fhir.Rest.ResourceIdentity)">
+            <summary>
+            Turn a relative reference into an absolute url, based on the fullUrl of the parent resource
+            </summary>
+            <param name="node"></param>
+            <param name="identity"></param>
+            <returns></returns>
+            <remarks>See https://www.hl7.org/fhir/bundle.html#references for more information</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.ScopedNodeExtensions.Resolve``1(``0,System.Func{System.String,``0})">
+            <summary>
+            Where this item is a reference, resolve it to an actual resource, and return that
+            </summary>
+            <param name="element"></param>
+            <param name="externalResolver"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.ElementModel.TypedElementParseExtensions.ParseBindable(Hl7.Fhir.ElementModel.ITypedElement)">
+            <summary>
+            Parses a bindeable type (code, Coding, CodeableConcept, Quantity, string, uri) into a FHIR coded datatype.
+            Extensions will be parsed from the 'value' of the (simple) extension.
+            </summary>
+            <param name="instance"></param>
+            <returns>An Element of a coded type (code, Coding or CodeableConcept) dependin on the instance type,
+            or null if no bindable instance data was found</returns>
+            <remarks>The instance type is mapped to a codable type as follows:
+              'code' => code
+              'Coding' => Coding
+              'CodeableConcept' => CodeableConcept
+              'Quantity' => Coding
+              'Extension' => depends on value[x]
+              'string' => code
+              'uri' => code
+            </remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.PocoBuilder.BuildFrom(Hl7.Fhir.ElementModel.ISourceNode,System.Type)">
+            <summary>
+            Build a POCO from an ISourceNode.
+            </summary>
+            <param name="source"></param>
+            <param name="dataType">Optional. Type of POCO to build. Should be one of the generated POCO classes.</param>
+            <returns></returns>
+            <remarks>If <paramref name="dataType"/> is not supplied, or is <code>Resource</code> or <code>DomainResource</code>, 
+            the builder will try to determine the actual type to create from the <paramref name="source"/>. </remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.PocoBuilder.BuildFrom(Hl7.Fhir.ElementModel.ISourceNode,Hl7.Fhir.Introspection.ClassMapping)">
+            <summary>
+            Build a POCO from an ISourceNode.
+            </summary>
+            <param name="source"></param>
+            <param name="mapping">Optional. The <see cref="T:Hl7.Fhir.Introspection.ClassMapping" /> for the POCO to build. </param>
+            <returns></returns>
+            <remarks>If <paramref name="mapping"/> is not supplied, or is <code>Resource</code> or <code>DomainResource</code>, 
+            the builder will try to determine the actual type to create from the <paramref name="source"/>. </remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.PocoBuilder.BuildFrom(Hl7.Fhir.ElementModel.ITypedElement)">
+            <summary>
+            Build a POCO from an ITypedElement.
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Hl7.Fhir.Serialization.PocoBuilderSettings">
+            <summary>Configuration settings for the PocoBuilder class.</summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.PocoBuilderSettings.AllowUnrecognizedEnums">
+            <summary>
+            Do not throw when encountering values not parseable as a member of an enumeration in a Poco.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.PocoBuilderSettings.IgnoreUnknownMembers">
+            <summary>
+            Do not throw when the data has an element that does not map to a property in the Poco.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.PocoBuilderSettings.TruncateDateTimeToDate">
+            <summary>
+            Allow to parse a FHIR dateTime values into an element of type date.
+            </summary>
+            <remarks>
+            Needed for backward compatibility with old parser for resources which were saved and considered valid in the past.
+            </remarks>>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.PocoBuilderSettings.#ctor">
+            <summary>Default constructor. Creates a new <see cref="T:Hl7.Fhir.Serialization.PocoBuilderSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.PocoBuilderSettings.#ctor(Hl7.Fhir.Serialization.PocoBuilderSettings)">
+            <summary>Clone constructor. Generates a new <see cref="T:Hl7.Fhir.Serialization.PocoBuilderSettings"/> instance initialized from the state of the specified instance.</summary>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.PocoBuilderSettings.CopyTo(Hl7.Fhir.Serialization.PocoBuilderSettings)">
+            <summary>Copy all configuration settings to another instance.</summary>
+            <param name="other">Another <see cref="T:Hl7.Fhir.Serialization.PocoBuilderSettings"/> instance.</param>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.PocoBuilderSettings.Clone">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Serialization.PocoBuilderSettings"/> object that is a copy of the current instance.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.PocoBuilderSettings.CreateDefault">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Serialization.PocoBuilderSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="T:Hl7.Fhir.Serialization.ParserSettings">
+            <summary>Common parser configuration settings for BaseFhirParser and subclasses.</summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.ParserSettings.DisallowXsiAttributesOnRoot">
+            <summary>
+            Raise an error when an xsi:schemaLocation is encountered.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.ParserSettings.AllowUnrecognizedEnums">
+            <summary>
+            Do not throw when encountering values not parseable as a member of an enumeration in a Poco.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.ParserSettings.AcceptUnknownMembers">
+            <summary>
+            Do not throw when the data has an element that does not map to a property in the Poco.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.ParserSettings.PermissiveParsing">
+            <summary>
+            Do not raise exceptions for recoverable errors.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.ParserSettings.TruncateDateTimeToDate">
+            <summary>
+            Allow to parse a FHIR dateTime values into an element of type date.
+            </summary>
+            <remarks>
+            Needed for backward compatibility with old parser for resources which were saved and considered valid in the past.
+            </remarks>>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.ParserSettings.#ctor">
+            <summary>Default constructor. Creates a new <see cref="T:Hl7.Fhir.Serialization.ParserSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.ParserSettings.#ctor(Hl7.Fhir.Serialization.ParserSettings)">
+            <summary>Clone constructor. Generates a new <see cref="T:Hl7.Fhir.Serialization.ParserSettings"/> instance initialized from the state of the specified instance.</summary>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.ParserSettings.CopyTo(Hl7.Fhir.Serialization.ParserSettings)">
+            <summary>Copy all configuration settings to another instance.</summary>
+            <param name="other">Another <see cref="T:Hl7.Fhir.Serialization.ParserSettings"/> instance.</param>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.ParserSettings.CopyTo(Hl7.Fhir.Serialization.PocoBuilderSettings)">
+            <summary>
+            Copy the necessary settings to PocoBuilderSettings
+            </summary>
+            <param name="settings">The instance where the settings are copied to.</param>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.ParserSettings.Clone">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Serialization.ParserSettings"/> object that is a copy of the current instance.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.ParserSettings.CreateDefault">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Serialization.ParserSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.SerializerSettings.Pretty">
+            <summary>
+            Format the serialized xml or json output.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.SerializerSettings.AppendNewLine">
+            <summary>
+            Add new line at the end of the serialized xml or json output.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.SerializerSettings.TrimWhiteSpacesInXml">
+            <summary>
+            Trim whitespaces at the beginning and end of xml attribute value
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Serialization.SerializerSettings.IncludeMandatoryInElementsSummary">
+            <summary>
+            Include mandatory elements when serializing a subset of chosen elements (_elements). 
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.SerializerSettings.#ctor">
+            <summary>Default constructor. Creates a new <see cref="T:Hl7.Fhir.Serialization.SerializerSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.SerializerSettings.#ctor(Hl7.Fhir.Serialization.SerializerSettings)">
+            <summary>Clone constructor. Generates a new <see cref="T:Hl7.Fhir.Serialization.SerializerSettings"/> instance initialized from the state of the specified instance.</summary>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.SerializerSettings.CopyTo(Hl7.Fhir.Serialization.SerializerSettings)">
+            <summary>Copy all configuration settings to another instance.</summary>
+            <param name="other">Another <see cref="T:Hl7.Fhir.Serialization.SerializerSettings"/> instance.</param>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.SerializerSettings.Clone">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Serialization.SerializerSettings"/> object that is a copy of the current instance.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Serialization.SerializerSettings.CreateDefault">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Serialization.SerializerSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.FhirPath.ElementNavFhirExtensions.HasValue(Hl7.Fhir.ElementModel.ITypedElement)">
+            <summary>
+            Check if the node has a value, and not just extensions.
+            </summary>
+            <param name="focus"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.FhirPath.ElementNavFhirExtensions.HtmlChecks(Hl7.Fhir.ElementModel.ITypedElement)">
+            <summary>
+            Check if the node has a value, and not just extensions.
+            </summary>
+            <param name="focus"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.FhirPath.FhirEvaluationContext.CreateDefault">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.FhirPath.FhirEvaluationContext"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.FhirPath.FhirEvaluationContext.#ctor">
+            <summary>Default constructor. Creates a new <see cref="T:Hl7.Fhir.FhirPath.FhirEvaluationContext"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.FhirPath.FhirEvaluationContext.#ctor(Hl7.Fhir.ElementModel.ITypedElement)">
+            <inheritdoc cref="M:Hl7.FhirPath.EvaluationContext.#ctor(Hl7.Fhir.ElementModel.ITypedElement)"/>
+        </member>
+        <member name="M:Hl7.Fhir.FhirPath.FhirEvaluationContext.#ctor(Hl7.Fhir.ElementModel.ITypedElement,Hl7.Fhir.ElementModel.ITypedElement)">
+            <inheritdoc cref="M:Hl7.FhirPath.EvaluationContext.#ctor(Hl7.Fhir.ElementModel.ITypedElement,Hl7.Fhir.ElementModel.ITypedElement)"/>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.ClassMapping.Name">
+            <summary>
+            Name of the mapping.
+            </summary>
+            <remarks>
+            This is often the FHIR name for the type, but not always:
+            <list type="bullet">
+            <item>FHIR <c>code</c> types with required bindings are modelled in the POCO as a <see cref="T:Hl7.Fhir.Model.Code`1"/>,
+            the mapping name for these will be <c>code&lt;name of enum&gt;</c></item>
+            <item>Nested (backbone)types have a mapping name that includes the full path to the element defining
+            the nested type, e.g. <c>Patient#Patient.contact</c></item>
+            </list>
+            </remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.ClassMapping.NativeType">
+            <summary>
+            The .NET class that implements the FHIR datatype/resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.ClassMapping.IsResource">
+            <summary>
+            Is <c>true</c> when this class represents a Resource datatype.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.ClassMapping.IsCodeOfT">
+            <summary>
+            Is <c>true</c> when this class represents a code with a required binding.
+            </summary>
+            <remarks>See <see cref="P:Hl7.Fhir.Introspection.ClassMapping.Name"></see>.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.ClassMapping.IsNestedType">
+            <summary>
+            Indicates whether this class represents the nested complex type for a (backbone) element.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.ClassMapping.Canonical">
+            <summary>
+            The canonical for the StructureDefinition defining this type
+            </summary>
+            <remarks>Will be null for backbone types.</remarks>
+        </member>
+        <member name="F:Hl7.Fhir.Introspection.ClassMapping.PropertyMappingCollection.ByOrder">
+            <summary>
+            List of the properties, in the order of appearance.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Introspection.ClassMapping.PropertyMappingCollection.ByName">
+            <summary>
+            List of the properties, keyed by name.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.ClassMapping.PropertyMappings">
+            <summary>
+            Secondary index of the PropertyMappings by uppercase name.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.ClassMapping.PrimitiveValueProperty">
+            <summary>
+            Holds a reference to a property that represents a primitive FHIR value. This
+            property will also be present in the PropertyMappings collection. If this class has 
+            no such property, it is null. 
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ClassMapping.FindMappedElementByName(System.String)">
+            <summary>
+            Returns the mapping for an element of this class.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ClassMapping.FindMappedElementByChoiceName(System.String)">
+            <summary>
+            Returns the mapping for an element of this class by a name that
+            might be suffixed by a type name (e.g. for choice elements).
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ClassMapping.inspectProperties(System.Type,Hl7.Fhir.Specification.FhirRelease)">
+            <summary>
+            Enumerate this class' properties using reflection, create PropertyMappings
+            for them and add them to the PropertyMappings.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.FhirElementAttribute.Name">
+            <summary>
+            The name of the element in FHIR this property represents.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.FhirElementAttribute.IsPrimitiveValue">
+            <summary>
+            The element represents the primitive `value` attribute/property in the FHIR serialization
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.FhirElementAttribute.XmlSerialization">
+            <summary>
+            How this value is represented in XML.
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Introspection.FhirModelAssemblyAttribute">
+            <summary>
+            Signals that the assembly contains classes that define metadata for the
+            FHIR resources and datatypes.
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Introspection.FhirTypeAttribute">
+            <summary>
+            This attribute is applied to classes that represent FHIR datatypes and resources.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.FhirTypeAttribute.Name">
+            <summary>
+            The name of the FHIR type this class represents.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.FhirTypeAttribute.IsNestedType">
+            <summary>
+            Indicates whether this class represents the nested complex type for a (backbone) element.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.FhirTypeAttribute.IsResource">
+            <summary>
+            Indicates whether this class represents a Resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.FhirTypeAttribute.Canonical">
+            <summary>
+            The canonical of the StructureDefinition defining this type.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.IFhirVersionDependent.Since">
+            <summary>
+            First version of FHIR for which this attribute applies, as a major FHIR release number
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.FhirVersionDependentExtensions.AppliesToRelease(System.Attribute,Hl7.Fhir.Specification.FhirRelease)">
+            <summary>
+            Determines whether the given attribute applies to a given FHIR release.
+            </summary>
+            <remarks>An attribute is applicable to a given <see cref="T:Hl7.Fhir.Specification.FhirRelease"/> if
+            the attribute has a <see cref="P:Hl7.Fhir.Introspection.IFhirVersionDependent.Since"/> value that
+            equivalent to or older than <paramref name="release"/> or has no <c>Since</c>
+            value at all.</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.Introspection.ModelInspector">
+            <summary>
+            A cache of FHIR type mappings found on .NET classes.
+            </summary>
+            <remarks>POCO's in the "common" assemblies
+            can reflect the definition of multiple releases of FHIR using <see cref="T:Hl7.Fhir.Introspection.IFhirVersionDependent"/>
+            attributes. A <see cref="T:Hl7.Fhir.Introspection.ModelInspector"/> will always capture the metadata for one such
+            <see cref="T:Hl7.Fhir.Specification.FhirRelease" /> which is passed to it in the constructor.
+            </remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ModelInspector.ForAssembly(System.Reflection.Assembly)">
+            <summary>
+            Returns a fully configured <see cref="T:Hl7.Fhir.Introspection.ModelInspector"/> with the
+            FHIR metadata contents of the given assembly. Calling this function repeatedly for
+            the same assembly will return the same inspector.
+            </summary>
+            <remarks>If the assembly given is FHIR Release specific, the returned inspector will contain
+            metadata for that release only. If the assembly is the common assembly, it will contain
+            metadata for the most recent release for those common classes.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ModelInspector.#ctor(Hl7.Fhir.Specification.FhirRelease)">
+            <summary>
+            Constructs a ModelInspector that will reflect the FHIR metadata for the given FHIR release
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ModelInspector.Import(System.Reflection.Assembly)">
+            <summary>
+            Locates all types in the assembly representing FHIR metadata and extracts
+            the data as <see cref="T:Hl7.Fhir.Introspection.ClassMapping"/>s.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ModelInspector.ImportType(System.Type)">
+            <summary>
+            Extracts the FHIR metadata from a <see cref="T:System.Type"/> into a <see cref="T:Hl7.Fhir.Introspection.ClassMapping"/>.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ModelInspector.FindClassMapping(System.String)">
+            <summary>
+            Retrieves an already imported <see cref="T:Hl7.Fhir.Introspection.ClassMapping" /> given a FHIR type name.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ModelInspector.FindClassMapping(System.Type)">
+            <summary>
+            Retrieves an already imported <see cref="T:Hl7.Fhir.Introspection.ClassMapping" /> given a Type.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ModelInspector.FindClassMappingByCanonical(System.String)">
+            <summary>
+            Retrieves an already imported <see cref="T:Hl7.Fhir.Introspection.ClassMapping" /> given a canonical.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.ModelInspector.Provide(System.String)">
+            <inheritdoc cref="M:Hl7.Fhir.Specification.IStructureDefinitionSummaryProvider.Provide(System.String)"/>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.Name">
+            <summary>
+            The name of the element in the FHIR specification.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.IsCollection">
+            <summary>
+            Whether the element can repeat.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.IsPrimitive">
+            <summary>
+            The element is of an atomic .NET type, not a FHIR generated POCO.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.RepresentsValueElement">
+            <summary>
+            The element is a primitive (<seealso cref="P:Hl7.Fhir.Introspection.PropertyMapping.IsPrimitive"/>) and 
+            represents the primitive `value` attribute/property in the FHIR serialization.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.InSummary">
+            <summary>
+            Whether the element appears in _summary 
+            (see https://www.hl7.org/fhir/search.html#summary)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.IsMandatoryElement">
+            <summary>
+            Whether the element has a cardinality higher than 0.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.ImplementingType">
+            <summary>
+            The native type of the element.
+            </summary>
+            <remarks>If the element is a collection or is nullable, this reflects the
+            collection item or the type that is made nullable respectively.
+            </remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.ElementType">
+            <summary>
+            The native type of the element.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.Order">
+            <summary>
+            The numeric order of the element (relevant for the XML serialization, which
+            needs to be in order).
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.SerializationHint">
+            <summary>
+            How this element is represented in the XML serialization.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.Choice">
+            <summary>
+            Specifies whether this element contains a choice (either a choice element or a
+            contained resource).
+            </summary>
+            <remarks>In the case of a DataChoice, these elements have names ending in [x] in 
+            the StructureDefinition and allow a (possibly restricted) set of types to be used. 
+            These are reflected in the <see cref="P:Hl7.Fhir.Introspection.PropertyMapping.FhirType"/> property.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.IsResourceChoice">
+            <summary>
+            This element is a polymorphic Resource, any resource is allowed here.
+            </summary>
+            <remarks>These are elements like DomainResource.contained, Parameters.resource etc.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.PropertyMapping.FhirType">
+            <summary>
+            The list of possible FHIR types for this element, represented as native types.
+            </summary>
+            <remark>These are the defined (choice) types for this element as specified in the
+            FHIR data definitions. It is derived from the actual property type,
+            or, if present, via a list of types in the [AllowedTypes] attribute. Finally,
+            it the property type does not represent FHIR metadata, it is overridden using
+            the [DeclaredType] attribute.
+            </remark>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.PropertyMapping.GetValue(System.Object)">
+            <summary>
+            Given an instance of the parent class, gets the value for this property.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Introspection.PropertyMapping.SetValue(System.Object,System.Object)">
+            <summary>
+            Given an instance of the parent class, sets the value for this property.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.VersionedAttribute.Since">
+            <inheritdoc cref="P:Hl7.Fhir.Introspection.IFhirVersionDependent.Since" />
+        </member>
+        <member name="P:Hl7.Fhir.Introspection.VersionedValidationAttribute.Since">
+            <inheritdoc cref="P:Hl7.Fhir.Introspection.IFhirVersionDependent.Since" />
+        </member>
+        <member name="M:Hl7.Fhir.Model.Base.CopyTo(Hl7.Fhir.Model.IDeepCopyable)">
+            <summary>
+            
+            </summary>
+            <param name="other"></param>
+            <remarks>Does a deep-copy of all elements, except UserData</remarks>
+            <returns></returns>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Base.Children">
+            <summary>
+            Enumerate all child nodes.
+            Return a sequence of child elements, components and/or properties.
+            Child nodes are returned in the order defined by the FHIR specification.
+            First returns child nodes inherited from any base class(es), recursively.
+            Finally returns child nodes defined by the current class.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Base.NamedChildren">
+            <summary>
+            Enumerate all child nodes.
+            Return a sequence of child elements, components and/or properties.
+            Child nodes are returned as tuples with the name and the node itself, in the order defined 
+            by the FHIR specification.
+            First returns child nodes inherited from any base class(es), recursively.
+            Finally returns child nodes defined by the current class.
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Canonical">
+            <summary>
+            Primitive Type canonical
+            see [Canonical References](references.html#canonical)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Canonical.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Canonical.PATTERN">
+            Must conform to the pattern "\S*"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Canonical.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Code">
+            <summary>
+            Primitive Type code
+            A string which has at least one character and no leading or trailing whitespace and where there is no whitespace other than single spaces in the contents
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Code.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Code.PATTERN">
+            Must conform to the pattern "[^\s]+( [^\s]+)*"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Code.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.CodeableConcept">
+            <summary>
+            Concept - reference to a terminology or just  text
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.CodeableConcept.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.CodeableConcept.Coding">
+            <summary>
+            Code defined by a terminology system
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.CodeableConcept.TextElement">
+            <summary>
+            Plain text representation of the concept
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.CodeableConcept.Text">
+            <summary>
+            Plain text representation of the concept
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Coding">
+            <summary>
+            A reference to a code defined by a terminology system
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.SystemElement">
+            <summary>
+            Identity of the terminology system
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.System">
+            <summary>
+            Identity of the terminology system
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.VersionElement">
+            <summary>
+            Version of the system - if relevant
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.Version">
+            <summary>
+            Version of the system - if relevant
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.CodeElement">
+            <summary>
+            Symbol in syntax defined by the system
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.Code">
+            <summary>
+            Symbol in syntax defined by the system
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.DisplayElement">
+            <summary>
+            Representation defined by the system
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.Display">
+            <summary>
+            Representation defined by the system
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.UserSelectedElement">
+            <summary>
+            If this coding was chosen directly by the user
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Coding.UserSelected">
+            <summary>
+            If this coding was chosen directly by the user
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.Model.ContactPoint">
+            <summary>
+            Details of a Technology mediated contact point (phone, fax, email, etc)
+            </summary>
+            <summary>
+            Details of a Technology mediated contact point (phone, fax, email, etc.)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.ContactPoint.ContactPointSystem">
+            <summary>
+            Telecommunications form for contact point.
+            (url: http://hl7.org/fhir/ValueSet/contact-point-system)
+            (system: http://hl7.org/fhir/contact-point-system)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointSystem.Phone">
+            <summary>
+            The value is a telephone number used for voice calls. Use of full international numbers starting with + is recommended to enable automatic dialing support but not required.
+            (system: http://hl7.org/fhir/contact-point-system)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointSystem.Fax">
+            <summary>
+            The value is a fax machine. Use of full international numbers starting with + is recommended to enable automatic dialing support but not required.
+            (system: http://hl7.org/fhir/contact-point-system)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointSystem.Email">
+            <summary>
+            The value is an email address.
+            (system: http://hl7.org/fhir/contact-point-system)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointSystem.Pager">
+            <summary>
+            The value is a pager number. These may be local pager numbers that are only usable on a particular pager system.
+            (system: http://hl7.org/fhir/contact-point-system)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointSystem.Url">
+            <summary>
+            A contact that is not a phone, fax, pager or email address and is expressed as a URL.  This is intended for various institutional or personal contacts including web sites, blogs, Skype, Twitter, Facebook, etc. Do not use for email addresses.
+            (system: http://hl7.org/fhir/contact-point-system)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointSystem.Sms">
+            <summary>
+            A contact that can be used for sending an sms message (e.g. mobile phones, some landlines).
+            (system: http://hl7.org/fhir/contact-point-system)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointSystem.Other">
+            <summary>
+            A contact that is not a phone, fax, page or email address and is not expressible as a URL.  E.g. Internal mail address.  This SHOULD NOT be used for contacts that are expressible as a URL (e.g. Skype, Twitter, Facebook, etc.)  Extensions may be used to distinguish "other" contact types.
+            (system: http://hl7.org/fhir/contact-point-system)
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.ContactPoint.ContactPointUse">
+            <summary>
+            Use of contact point.
+            (url: http://hl7.org/fhir/ValueSet/contact-point-use)
+            (system: http://hl7.org/fhir/contact-point-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointUse.Home">
+            <summary>
+            A communication contact point at a home; attempted contacts for business purposes might intrude privacy and chances are one will contact family or other household members instead of the person one wishes to call. Typically used with urgent cases, or if no other contacts are available.
+            (system: http://hl7.org/fhir/contact-point-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointUse.Work">
+            <summary>
+            An office contact point. First choice for business related contacts during business hours.
+            (system: http://hl7.org/fhir/contact-point-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointUse.Temp">
+            <summary>
+            A temporary contact point. The period can provide more detailed information.
+            (system: http://hl7.org/fhir/contact-point-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointUse.Old">
+            <summary>
+            This contact point is no longer in use (or was never correct, but retained for records).
+            (system: http://hl7.org/fhir/contact-point-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.ContactPoint.ContactPointUse.Mobile">
+            <summary>
+            A telecommunication device that moves and stays with its owner. May have characteristics of all other use codes, suitable for urgent matters, not the first choice for routine business.
+            (system: http://hl7.org/fhir/contact-point-use)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.SystemElement">
+            <summary>
+            phone | fax | email | pager | url | sms | other
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.System">
+            <summary>
+            phone | fax | email | pager | url | sms | other
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.ValueElement">
+            <summary>
+            The actual contact point details
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.Value">
+            <summary>
+            The actual contact point details
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.UseElement">
+            <summary>
+            home | work | temp | old | mobile - purpose of this contact point
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.Use">
+            <summary>
+            home | work | temp | old | mobile - purpose of this contact point
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.RankElement">
+            <summary>
+            Specify preferred order of use (1 = highest)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.Rank">
+            <summary>
+            Specify preferred order of use (1 = highest)
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactPoint.Period">
+            <summary>
+            Time period when the contact point was/is in use
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Date">
+            <summary>
+            Primitive Type date
+            A date or partial date (e.g. just year or year + month). There is no UTC offset. The format is a union of the schema types gYear, gYearMonth and date.  Dates SHALL be valid dates.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Date.op_Equality(Hl7.Fhir.Model.Date,Hl7.Fhir.Model.Date)">
+            <summary>
+            If you use this operator, you should check that a modifierExtension isn't changing the meaning
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Date.op_Inequality(Hl7.Fhir.Model.Date,Hl7.Fhir.Model.Date)">
+            <summary>
+            If you use this operator, you should check that a modifierExtension isn't changing the meaning
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Date.Today">
+            <summary>
+            Gets the current date in the local timezone
+            </summary>
+            <returns>Gets the current date in the local timezone</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Date.UtcToday">
+            <summary>
+            Gets the current date in the timezone UTC
+            </summary>
+            <returns>Gets the current date in the timezone UTC</returns>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Date.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Date.PATTERN">
+            Must conform to the pattern "([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)(-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1]))?)?"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Date.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.DomainResource">
+            <summary>
+            A resource with narrative, extensions, and contained resources
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Model.DomainResource.FindContainedResource(Hl7.Fhir.Model.ResourceReference)">
+            <summary>
+            Finds the contained resource defined by the <paramref name="reference"/>. A reference to a contained resource starts with the
+            character #.
+            </summary>
+            <param name="reference">the reference to contained resource</param>
+            <returns>The resource referenced by <paramref name="reference"/>, null otherwise.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.DomainResource.FindContainedResource(System.String)">
+            <summary>
+            Finds the contained resource defined by the <paramref name="reference"/>. A reference to a contained resource starts with the
+            character #.
+            </summary>
+            <param name="reference">the reference to contained resource</param>
+            <returns>The resource referenced by <paramref name="reference"/>, null otherwise.</returns>
+        </member>
+        <member name="P:Hl7.Fhir.Model.DomainResource.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.DomainResource.Text">
+            <summary>
+            Text summary of the resource, for human interpretation
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.DomainResource.Contained">
+            <summary>
+            Contained, inline Resources
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.DomainResource.Extension">
+            <summary>
+            Additional content defined by implementations
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.DomainResource.ModifierExtension">
+            <summary>
+            Extensions that cannot be ignored
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Element">
+            <summary>
+            Base for all elements
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Element.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Element.ElementId">
+            <summary>
+            Unique id for inter-element referencing
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Element.Extension">
+            <summary>
+            Additional Content defined by implementations
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Extension">
+            <summary>
+            Optional Extensions Element
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Extension.Url">
+            <summary>
+            identifies the meaning of the extension
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Extension.Value">
+            <summary>
+            Value of extension
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.FhirDateTime">
+            <summary>
+            Primitive Type dateTime
+            A date, date-time or partial date (e.g. just year or year + month).  If hours and minutes are specified, a UTC offset SHALL be populated. The format is a union of the schema types gYear, gYearMonth, date and dateTime. Seconds must be provided due to schema type constraints but may be zero-filled and may be ignored.                 Dates SHALL be valid dates.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Model.FhirDateTime.op_Equality(Hl7.Fhir.Model.FhirDateTime,Hl7.Fhir.Model.FhirDateTime)">
+            <summary>
+            If you use this operator, you should check that a modifierExtension isn't changing the meaning
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.FhirDateTime.op_Inequality(Hl7.Fhir.Model.FhirDateTime,Hl7.Fhir.Model.FhirDateTime)">
+            <summary>
+            If you use this operator, you should check that a modifierExtension isn't changing the meaning
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.FhirDateTime.ToDateTimeOffset(System.TimeSpan)">
+            <summary>
+            Converts this Fhir DateTime as a .NET DateTimeOffset
+            </summary>
+            <param name="zone">Ensures the returned DateTimeOffset uses the the specified zone.</param>
+            <remarks>In .NET the minimal value for DateTimeOffset is 1/1/0001 12:00:00 AM +00:00. That means,for example, 
+            a FhirDateTime of "0001-01-01T00:00:00+01:00" could not be converted to a DateTimeOffset. In that case a 
+            ArgumentOutOfRangeException will be thrown.</remarks>
+            <returns>A DateTimeOffset filled out to midnight, january 1 (UTC) in case of a partial date/time. If the Fhir DateTime
+            does not specify a timezone, the UTC (Coordinated Universal Time) is assumed. Note that the zone parameter has no
+            effect on this, this merely converts the given Fhir datetime to the desired timezone</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.FhirDateTime.TryToDateTimeOffset(System.DateTimeOffset@)">
+            <summary>
+            Determines whether a Fhir DateTime can be converted to a a .NET DateTimeOffset. Fails in case of a partial DateTime (no timezone), 
+            otherwise 'success' will be returned including the DateTimeOffset as out parameter. 
+            </summary>
+            <param name="dto">A DateTimeOffset, if a timezone is correctly specified</param>
+            <returns>A boolean representing if a DateTimeOffset keeping the original timezone can be converted</returns>
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirDateTime.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FhirDateTime.PATTERN">
+            Must conform to the pattern "([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)(-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1])(T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00)))?)?)?"
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirDateTime.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.FhirString">
+            <summary>
+            Primitive Type string
+            Note that FHIR strings SHALL NOT exceed 1MB in size
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirString.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FhirString.PATTERN">
+            Must conform to the pattern "[ \r\n\t\S]+"
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirString.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.FhirUri">
+            <summary>
+            Primitive Type uri
+            see http://en.wikipedia.org/wiki/Uniform_resource_identifier
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirUri.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FhirUri.PATTERN">
+            Must conform to the pattern "\S*"
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirUri.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.FhirUrl">
+            <summary>
+            Primitive Type url
+            A URI that is a literal reference
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirUrl.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FhirUrl.PATTERN">
+            Must conform to the pattern "\S*"
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirUrl.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.BackboneElement">
+            <summary>
+            Base for elements defined inside a resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.BackboneElement.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.BackboneElement.ModifierExtension">
+            <summary>
+            Extensions that cannot be ignored even if unrecognized
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.BackboneType">
+            <summary>
+            Base for datatypes that can carry modifier extensions
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.BackboneType.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.BackboneType.ModifierExtension">
+            <summary>
+            Extensions that cannot be ignored even if unrecognized
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Base64Binary">
+            <summary>
+            Primitive Type base64Binary
+            A stream of bytes, base64 encoded
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Base64Binary.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Base64Binary.PATTERN">
+            Must conform to the pattern "(\s*([0-9a-zA-Z*\/*\+\=]){4}\s*)+"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Base64Binary.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.ContactDetail">
+            <summary>
+            Contact information
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactDetail.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactDetail.NameElement">
+            <summary>
+            Name of an individual to contact
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactDetail.Name">
+            <summary>
+            Name of an individual to contact
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ContactDetail.Telecom">
+            <summary>
+            Contact details for individual or organization
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.DataType">
+            <summary>
+            Reuseable Types
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.DataType.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.FhirBoolean">
+            <summary>
+            Primitive Type boolean
+            Value of "true" or "false"
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirBoolean.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FhirBoolean.PATTERN">
+            Must conform to the pattern "true|false"
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirBoolean.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.FhirDecimal">
+            <summary>
+            Primitive Type decimal
+            Do not use an IEEE type floating point type, instead use something that works like a true decimal, with inbuilt precision (e.g. Java BigInteger)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirDecimal.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FhirDecimal.PATTERN">
+            Must conform to the pattern "-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?"
+        </member>
+        <member name="P:Hl7.Fhir.Model.FhirDecimal.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Id">
+            <summary>
+            Primitive Type id
+            RFC 4122
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Id.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Id.PATTERN">
+            Must conform to the pattern "[A-Za-z0-9\-\.]{1,64}"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Id.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Identifier">
+            <summary>
+            An identifier intended for computation
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Identifier.IdentifierUse">
+            <summary>
+            Identifies the purpose for this identifier, if known .
+            (url: http://hl7.org/fhir/ValueSet/identifier-use)
+            (system: http://hl7.org/fhir/identifier-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Identifier.IdentifierUse.Usual">
+            <summary>
+            The identifier recommended for display and use in real-world interactions.
+            (system: http://hl7.org/fhir/identifier-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Identifier.IdentifierUse.Official">
+            <summary>
+            The identifier considered to be most trusted for the identification of this item. Sometimes also known as "primary" and "main". The determination of "official" is subjective and implementation guides often provide additional guidelines for use.
+            (system: http://hl7.org/fhir/identifier-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Identifier.IdentifierUse.Temp">
+            <summary>
+            A temporary identifier.
+            (system: http://hl7.org/fhir/identifier-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Identifier.IdentifierUse.Secondary">
+            <summary>
+            An identifier that was assigned in secondary use - it serves to identify the object in a relative context, but cannot be consistently assigned to the same object again in a different context.
+            (system: http://hl7.org/fhir/identifier-use)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Identifier.IdentifierUse.Old">
+            <summary>
+            The identifier id no longer considered valid, but may be relevant for search purposes.  E.g. Changes to identifier schemes, account merges, etc.
+            (system: http://hl7.org/fhir/identifier-use)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.UseElement">
+            <summary>
+            usual | official | temp | secondary | old (If known)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.Use">
+            <summary>
+            usual | official | temp | secondary | old (If known)
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.Type">
+            <summary>
+            Description of identifier
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.SystemElement">
+            <summary>
+            The namespace for the identifier value
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.System">
+            <summary>
+            The namespace for the identifier value
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.ValueElement">
+            <summary>
+            The value that is unique
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.Value">
+            <summary>
+            The value that is unique
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.Period">
+            <summary>
+            Time period when id is/was valid for use
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Identifier.Assigner">
+            <summary>
+            Organization that issued id (may be just text)
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Instant">
+            <summary>
+            Primitive Type instant
+            Note: This is intended for where precisely observed times are required, typically system logs etc., and not human-reported times - for them, see date and dateTime (which can be as precise as instant, but is not required to be) below. UTC offset is always required
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Instant.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Instant.PATTERN">
+            Must conform to the pattern "([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Instant.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Instant.op_Equality(Hl7.Fhir.Model.Instant,Hl7.Fhir.Model.Instant)">
+            <summary>
+            If you use this operator, you should check that a modifierExtension isn't changing the meaning
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Instant.op_Inequality(Hl7.Fhir.Model.Instant,Hl7.Fhir.Model.Instant)">
+            <summary>
+            If you use this operator, you should check that a modifierExtension isn't changing the meaning
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Integer">
+            <summary>
+            Primitive Type integer
+            32 bit number; for values larger than this, use decimal
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Integer.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Integer.PATTERN">
+            Must conform to the pattern "-?([0]|([1-9][0-9]*))"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Integer.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Integer64">
+            <summary>
+            Primitive Type integer64
+            Typically this is used for record counters (e.g. database keys)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Integer64.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Integer64.PATTERN">
+            Must conform to the pattern "-?([0]|([1-9][0-9]*))"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Integer64.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Markdown">
+            <summary>
+            Primitive Type markdown
+            Systems are not required to have markdown support, so the text should be readable without markdown processing. The markdown syntax is GFM - see https://github.github.com/gfm/
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Markdown.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Markdown.PATTERN">
+            Must conform to the pattern "[ \r\n\t\S]+"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Markdown.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Meta">
+            <summary>
+            Metadata about a resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.VersionIdElement">
+            <summary>
+            Version specific identifier
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.VersionId">
+            <summary>
+            Version specific identifier
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.LastUpdatedElement">
+            <summary>
+            When the resource version last changed
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.LastUpdated">
+            <summary>
+            When the resource version last changed
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.SourceElement">
+            <summary>
+            Identifies where the resource comes from
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.Source">
+            <summary>
+            Identifies where the resource comes from
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.ProfileElement">
+            <summary>
+            Profiles this resource claims to conform to
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.Profile">
+            <summary>
+            Profiles this resource claims to conform to
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.Security">
+            <summary>
+            Security Labels applied to this resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Meta.Tag">
+            <summary>
+            Tags applied to this resource
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Oid">
+            <summary>
+            Primitive Type oid
+            RFC 3001. See also ISO/IEC 8824:1990 €
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Oid.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Oid.PATTERN">
+            Must conform to the pattern "urn:oid:[0-2](\.(0|[1-9][0-9]*))+"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Oid.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.OperationOutcome">
+            <summary>
+            Information about the success/failure of an action
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.OperationOutcome.IssueSeverity">
+            <summary>
+            How the issue affects the success of the action.
+            (url: http://hl7.org/fhir/ValueSet/issue-severity)
+            (system: http://hl7.org/fhir/issue-severity)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueSeverity.Fatal">
+            <summary>
+            The issue caused the action to fail and no further checking could be performed.
+            (system: http://hl7.org/fhir/issue-severity)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueSeverity.Error">
+            <summary>
+            The issue is sufficiently important to cause the action to fail.
+            (system: http://hl7.org/fhir/issue-severity)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueSeverity.Warning">
+            <summary>
+            The issue is not important enough to cause the action to fail but may cause it to be performed suboptimally or in a way that is not as desired.
+            (system: http://hl7.org/fhir/issue-severity)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueSeverity.Information">
+            <summary>
+            The issue has no relation to the degree of success of the action.
+            (system: http://hl7.org/fhir/issue-severity)
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.OperationOutcome.IssueType">
+            <summary>
+            A code that describes the type of issue.
+            (url: http://hl7.org/fhir/ValueSet/issue-type)
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Invalid">
+            <summary>
+            Content invalid against the specification or a profile.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Structure">
+            <summary>
+            A structural issue in the content such as wrong namespace, unable to parse the content completely, invalid syntax, etc.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Required">
+            <summary>
+            A required element is missing.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Value">
+            <summary>
+            An element or header value is invalid.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Invariant">
+            <summary>
+            A content validation rule failed - e.g. a schematron rule.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Security">
+            <summary>
+            An authentication/authorization/permissions issue of some kind.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Login">
+            <summary>
+            The client needs to initiate an authentication process.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Unknown">
+            <summary>
+            The user or system was not able to be authenticated (either there is no process, or the proferred token is unacceptable).
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Expired">
+            <summary>
+            User session expired; a login may be required.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Forbidden">
+            <summary>
+            The user does not have the rights to perform this action.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Suppressed">
+            <summary>
+            Some information was not or might not have been returned due to business rules, consent or privacy rules, or access permission constraints.  This information may be accessible through alternate processes.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Processing">
+            <summary>
+            Processing issues. These are expected to be final e.g. there is no point resubmitting the same content unchanged.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.NotSupported">
+            <summary>
+            The interaction, operation, resource or profile is not supported.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Duplicate">
+            <summary>
+            An attempt was made to create a duplicate record.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.MultipleMatches">
+            <summary>
+            Multiple matching records were found when the operation required only one match.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.NotFound">
+            <summary>
+            The reference provided was not found. In a pure RESTful environment, this would be an HTTP 404 error, but this code may be used where the content is not found further into the application architecture.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Deleted">
+            <summary>
+            The reference pointed to content (usually a resource) that has been deleted.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.TooLong">
+            <summary>
+            Provided content is too long (typically, this is a denial of service protection type of error).
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.CodeInvalid">
+            <summary>
+            The code or system could not be understood, or it was not valid in the context of a particular ValueSet.code.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Extension">
+            <summary>
+            An extension was found that was not acceptable, could not be resolved, or a modifierExtension was not recognized.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.TooCostly">
+            <summary>
+            The operation was stopped to protect server resources; e.g. a request for a value set expansion on all of SNOMED CT.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.BusinessRule">
+            <summary>
+            The content/operation failed to pass some business rule and so could not proceed.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Conflict">
+            <summary>
+            Content could not be accepted because of an edit conflict (i.e. version aware updates). (In a pure RESTful environment, this would be an HTTP 409 error, but this code may be used where the conflict is discovered further into the application architecture.).
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Transient">
+            <summary>
+            Transient processing issues. The system receiving the message may be able to resubmit the same content once an underlying issue is resolved.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.LockError">
+            <summary>
+            A resource/record locking failure (usually in an underlying database).
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.NoStore">
+            <summary>
+            The persistent store is unavailable; e.g. the database is down for maintenance or similar action, and the interaction or operation cannot be processed.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Exception">
+            <summary>
+            An unexpected internal error has occurred.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Timeout">
+            <summary>
+            An internal timeout has occurred.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Incomplete">
+            <summary>
+            Not all data sources typically accessed could be reached or responded in time, so the returned information might not be complete (applies to search interactions and some operations).
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Throttled">
+            <summary>
+            The system is not prepared to handle this request due to load management.
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.OperationOutcome.IssueType.Informational">
+            <summary>
+            A message unrelated to the processing success of the completed operation (examples of the latter include things like reminders of password expiry, system maintenance times, etc.).
+            (system: http://hl7.org/fhir/issue-type)
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.OperationOutcome.IssueComponent">
+            <summary>
+            A single issue associated with the action
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.SeverityElement">
+            <summary>
+            fatal | error | warning | information
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.Severity">
+            <summary>
+            fatal | error | warning | information
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.CodeElement">
+            <summary>
+            Error or warning code
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.Code">
+            <summary>
+            Error or warning code
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.Details">
+            <summary>
+            Additional details about the error
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.DiagnosticsElement">
+            <summary>
+            Additional diagnostic information about the issue
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.Diagnostics">
+            <summary>
+            Additional diagnostic information about the issue
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.LocationElement">
+            <summary>
+            Deprecated: Path of element(s) related to issue
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.Location">
+            <summary>
+            Deprecated: Path of element(s) related to issue
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.ExpressionElement">
+            <summary>
+            FHIRPath of element(s) related to issue
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.IssueComponent.Expression">
+            <summary>
+            FHIRPath of element(s) related to issue
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.OperationOutcome.Issue">
+            <summary>
+            A single issue associated with the action
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Parameters">
+            <summary>
+            Operation Request or Response
+            </summary>
+            <summary>
+            This is the Parameters partial class that adds all the specific functionality of a Parameters to the model
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Parameters.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Parameters.ParameterComponent">
+            <summary>
+            Operation Parameter
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Parameters.ParameterComponent.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Parameters.ParameterComponent.NameElement">
+            <summary>
+            Name from the definition
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Parameters.ParameterComponent.Name">
+            <summary>
+            Name from the definition
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Parameters.ParameterComponent.Value">
+            <summary>
+            If parameter is a data type
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Parameters.ParameterComponent.Resource">
+            <summary>
+            If parameter is a whole resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Parameters.ParameterComponent.Part">
+            <summary>
+            Named part of a multi-part parameter
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Parameters.Parameter">
+            <summary>
+            Operation Parameter
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Parameters.Add(System.String,Hl7.Fhir.Model.Base)">
+            <summary>
+            Add a parameter with a given name and value.
+            </summary>
+            <param name="name">The name of the parameter</param>
+            <param name="value">The value of the parameter as a FHIR datatype or Resource</param>
+            <returns>this (Parameters), so you can chain AddParameter calls</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Parameters.Add(System.String,System.Collections.Generic.IEnumerable{System.Tuple{System.String,Hl7.Fhir.Model.Base}})">
+            <summary>
+            Add a parameter with a given name and tuple value.
+            </summary>
+            <param name="name">The name of the parameter</param>
+            <param name="tuples">The value of the parameter as a list of tuples of (name,FHIR datatype or Resource)</param>
+            <returns>this (Parameters), so you can chain AddParameter calls</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Parameters.Remove(System.String,System.Boolean)">
+            <summary>
+            Remove a parameter with a given name.
+            </summary>
+            <param name="name">The name of the parameter</param>
+            <param name="matchPrefix">If true, will remove all parameters which begin with the string given in the "name" parameter</param>
+            <remarks>No exception is thrown when the parameters were not found and nothing was removed.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Parameters.Get(System.String,System.Boolean)">
+            <summary>
+            Searches for a parameter with the given name, and returns the matching parameter(s)
+            </summary>
+            <param name="name">The name of the parameter</param>
+            <param name="matchPrefix">If true, will remove all parameters which begin with the string given in the "name" parameter</param>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Parameters.GetSingle(System.String,System.Boolean)">
+            <summary>
+            Searches for a parameter with the given name, and returns the matching parameter(s)
+            </summary>
+            <param name="name">The name of the parameter</param>
+            <param name="matchPrefix">If true, will remove all parameters which begin with the string given in the "name" parameter</param>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Parameters.GetSingleValue``1(System.String,System.Boolean)">
+            <summary>
+            Returns the Value property of the requested parameter casted to the requested type
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="name"></param>
+            <param name="matchPrefix"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Period">
+            <summary>
+            Time range defined by start and end date/time
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Period.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Period.StartElement">
+            <summary>
+            Starting time with inclusive boundary
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Period.Start">
+            <summary>
+            Starting time with inclusive boundary
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Period.EndElement">
+            <summary>
+            End time with inclusive boundary, if not ongoing
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Period.End">
+            <summary>
+            End time with inclusive boundary, if not ongoing
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.Model.PositiveInt">
+            <summary>
+            Primitive Type positiveInt
+            An integer with a value that is positive (e.g. &gt;0)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.PositiveInt.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.PositiveInt.PATTERN">
+            Must conform to the pattern "[1-9][0-9]*"
+        </member>
+        <member name="P:Hl7.Fhir.Model.PositiveInt.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Quantity">
+            <summary>
+            A measured or measurable amount
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Quantity.QuantityComparator">
+            <summary>
+            How the Quantity should be understood and represented.
+            (url: http://hl7.org/fhir/ValueSet/quantity-comparator)
+            (system: http://hl7.org/fhir/quantity-comparator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Quantity.QuantityComparator.LessThan">
+            <summary>
+            The actual value is less than the given value.
+            (system: http://hl7.org/fhir/quantity-comparator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Quantity.QuantityComparator.LessOrEqual">
+            <summary>
+            The actual value is less than or equal to the given value.
+            (system: http://hl7.org/fhir/quantity-comparator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Quantity.QuantityComparator.GreaterOrEqual">
+            <summary>
+            The actual value is greater than or equal to the given value.
+            (system: http://hl7.org/fhir/quantity-comparator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Quantity.QuantityComparator.GreaterThan">
+            <summary>
+            The actual value is greater than the given value.
+            (system: http://hl7.org/fhir/quantity-comparator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Quantity.QuantityComparator.Ad">
+            <summary>
+            The actual value is sufficient for the total quantity to equal the given value.
+            (system: http://hl7.org/fhir/quantity-comparator)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.ValueElement">
+            <summary>
+            Numerical value (with implicit precision)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.Value">
+            <summary>
+            Numerical value (with implicit precision)
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.ComparatorElement">
+            <summary>
+            &lt; | &lt;= | &gt;= | &gt; | ad - how to understand the value
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.Comparator">
+            <summary>
+            &lt; | &lt;= | &gt;= | &gt; | ad - how to understand the value
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.UnitElement">
+            <summary>
+            Unit representation
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.Unit">
+            <summary>
+            Unit representation
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.SystemElement">
+            <summary>
+            System that defines coded unit form
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.System">
+            <summary>
+            System that defines coded unit form
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.CodeElement">
+            <summary>
+            Coded form of the unit
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Quantity.Code">
+            <summary>
+            Coded form of the unit
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Range">
+            <summary>
+            Set of values bounded by low and high
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Range.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Range.Low">
+            <summary>
+            Low limit
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Range.High">
+            <summary>
+            High limit
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Resource">
+            <summary>
+            Base Resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Resource.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Resource.IdElement">
+            <summary>
+            Logical id of this artifact
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Resource.Id">
+            <summary>
+            Logical id of this artifact
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Resource.Meta">
+            <summary>
+            Metadata about the resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Resource.ImplicitRulesElement">
+            <summary>
+            A set of rules under which this content was created
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Resource.ImplicitRules">
+            <summary>
+            A set of rules under which this content was created
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Resource.LanguageElement">
+            <summary>
+            Language of the resource content
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Resource.Language">
+            <summary>
+            Language of the resource content
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Resource.ResourceBase">
+            <summary>
+            This is the base URL of the FHIR server that this resource is hosted on
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Resource.SyncLock">
+            <summary>
+            This object is internally used for locking the resource in a multithreaded environment.
+            </summary>
+            <remarks>
+            As a consumer of this API, please do not use this object.
+            </remarks>
+        </member>
+        <member name="T:Hl7.Fhir.Model.ResourceReference">
+            <summary>
+            A reference from one resource to another
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.ReferenceElement">
+            <summary>
+            Literal reference, Relative, internal or absolute URL
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.Reference">
+            <summary>
+            Literal reference, Relative, internal or absolute URL
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.TypeElement">
+            <summary>
+            Type the reference refers to (e.g. "Patient")
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.Type">
+            <summary>
+            Type the reference refers to (e.g. "Patient")
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.Identifier">
+            <summary>
+            Logical reference, when literal reference is not known
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.DisplayElement">
+            <summary>
+            Text alternative for the resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.Display">
+            <summary>
+            Text alternative for the resource
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.Url">
+            <summary>
+            Native .net typed version of the string Reference property
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.ResourceReference.IsContainedReference">
+            <summary>
+            Determines whether the ResourceReference is a reference to a contained resource (i.e. the reference value starts with an Url anchor ('#'))
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.FilterOperator">
+            <summary>
+            The kind of operation to perform as a part of a property based filter.
+            (url: http://hl7.org/fhir/ValueSet/filter-operator)
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.Equal">
+            <summary>
+            The specified property of the code equals the provided value.
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.IsA">
+            <summary>
+            Includes all concept ids that have a transitive is-a relationship with the concept Id provided as the value, including the provided concept itself (include descendant codes and self).
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.DescendentOf">
+            <summary>
+            Includes all concept ids that have a transitive is-a relationship with the concept Id provided as the value, excluding the provided concept itself i.e. include descendant codes only).
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.IsNotA">
+            <summary>
+            The specified property of the code does not have an is-a relationship with the provided value.
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.Regex">
+            <summary>
+            The specified property of the code  matches the regex specified in the provided value.
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.In">
+            <summary>
+            The specified property of the code is in the set of codes or concepts specified in the provided value (comma separated list).
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.NotIn">
+            <summary>
+            The specified property of the code is not in the set of codes or concepts specified in the provided value (comma separated list).
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.Generalizes">
+            <summary>
+            Includes all concept ids that have a transitive is-a relationship from the concept Id provided as the value, including the provided concept itself (i.e. include ancestor codes and self).
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.ChildOf">
+            <summary>
+            Only concepts with a direct hierarchical relationship to the index code and no other concepts. This does not include the index code in the output.
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.DescendentLeaf">
+            <summary>
+            Includes concept ids that have a transitive is-a relationship with the concept Id provided as the value, but which do not have any concept ids with transitive is-a relationships with themselves.
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.FilterOperator.Exists">
+            <summary>
+            The specified property of the code has at least one value (if the specified value is true; if the specified value is false, then matches when the specified property of the code has no values).
+            (system: http://hl7.org/fhir/filter-operator)
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.PublicationStatus">
+            <summary>
+            The lifecycle status of an artifact.
+            (url: http://hl7.org/fhir/ValueSet/publication-status)
+            (system: http://hl7.org/fhir/publication-status)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.PublicationStatus.Draft">
+            <summary>
+            This resource is still under development and is not yet considered to be ready for normal use.
+            (system: http://hl7.org/fhir/publication-status)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.PublicationStatus.Active">
+            <summary>
+            This resource is ready for normal use.
+            (system: http://hl7.org/fhir/publication-status)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.PublicationStatus.Retired">
+            <summary>
+            This resource has been withdrawn or superseded and should no longer be used.
+            (system: http://hl7.org/fhir/publication-status)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.PublicationStatus.Unknown">
+            <summary>
+            The authoring system does not know which of the status values currently applies for this resource.  Note: This concept is not to be used for "other" - one of the listed statuses is presumed to apply, it's just not known which one.
+            (system: http://hl7.org/fhir/publication-status)
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Time">
+            <summary>
+            Primitive Type time
+            A time during the day, with no date specified
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Time.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Time.PATTERN">
+            Must conform to the pattern "([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Time.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Time.op_Equality(Hl7.Fhir.Model.Time,Hl7.Fhir.Model.Time)">
+            <summary>
+            If you use this operator, you should check that a modifierExtension isn't changing the meaning
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.Time.op_Inequality(Hl7.Fhir.Model.Time,Hl7.Fhir.Model.Time)">
+            <summary>
+            If you use this operator, you should check that a modifierExtension isn't changing the meaning
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Hl7.Fhir.Model.UnsignedInt">
+            <summary>
+            Primitive Type unsignedInt
+            An integer with a value that is not negative (e.g. &gt;= 0)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.UnsignedInt.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.UnsignedInt.PATTERN">
+            Must conform to the pattern "[0]|([1-9][0-9]*)"
+        </member>
+        <member name="P:Hl7.Fhir.Model.UnsignedInt.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.UsageContext">
+            <summary>
+            Describes the context of use for a conformance or knowledge resource
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.UsageContext.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.UsageContext.Code">
+            <summary>
+            Type of context being specified
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.UsageContext.Value">
+            <summary>
+            Value that defines the context
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Uuid">
+            <summary>
+            Primitive Type uuid
+            See The Open Group, CDE 1.1 Remote Procedure Call specification, Appendix A.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Uuid.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Uuid.PATTERN">
+            Must conform to the pattern "urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        </member>
+        <member name="P:Hl7.Fhir.Model.Uuid.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.XHtml">
+            <summary>
+            Primitive Type xhtml
+            XHTML
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.XHtml.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.XHtml.Value">
+            <summary>
+            Primitive value of the element
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Model.ExtensionExtensions.GetStringExtension(Hl7.Fhir.Model.IExtendable,System.String)">
+            <summary>
+            Return the first extension with the given uri as a string, or null if none was found
+            </summary>
+            <param name="extendable"></param>
+            <param name="uri"></param>
+            <returns>The first uri, or null if no extension with the given uri was found.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.ExtensionExtensions.GetExtension(Hl7.Fhir.Model.IExtendable,System.String)">
+            <summary>
+            Return the first extension with the given uri, or null if none was found
+            </summary>
+            <param name="extendable"></param>
+            <param name="uri"></param>
+            <returns>The first uri, or null if no extension with the given uri was found.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.ExtensionExtensions.GetExtensions(Hl7.Fhir.Model.IExtendable,System.String)">
+            <summary>
+            Find all extensions with the given uri.
+            </summary>
+            <param name="extendable"></param>
+            <param name="uri"></param>
+            <returns>The list of extensions with a matching uri, or empty list if none were found.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.ExtensionExtensions.GetExtensions(Hl7.Fhir.Model.IModifierExtendable,System.String)">
+            <summary>
+            Find all extensions with the given uri.
+            </summary>
+            <param name="extendable"></param>
+            <param name="uri"></param>
+            <returns>The list of extensions with a matching uri, or empty list if none were found.</returns>
+            <remarks>If multiple extensions with the same uri are found, this function returns the first modifier extensions,
+            otherwise the first normal extension.</remarks>        
+        </member>
+        <member name="M:Hl7.Fhir.Model.ExtensionExtensions.AddExtension(Hl7.Fhir.Model.IExtendable,System.String,Hl7.Fhir.Model.DataType,System.Boolean)">
+            <summary>
+            Add an extension with the given uri and value
+            </summary>
+            <param name="extendable"></param>
+            <param name="uri"></param>
+            <param name="value"></param>
+            <param name="isModifier"></param>
+            <returns>The newly added Extension</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Model.ExtensionExtensions.RemoveExtension(Hl7.Fhir.Model.IExtendable,System.String)">
+            <summary>
+            Remove all extensions with the current uri, if any.
+            </summary>
+            <param name="extendable"></param>
+            <param name="uri"></param>
+        </member>
+        <member name="M:Hl7.Fhir.Model.ExtensionExtensions.SetExtension(Hl7.Fhir.Model.IExtendable,System.String,Hl7.Fhir.Model.DataType,System.Boolean)">
+            <summary>
+            Add an extension with the given uri and value, removing any pre-existsing extensions
+            with the same uri.
+            </summary>
+            <param name="extendable"></param>
+            <param name="uri"></param>
+            <param name="value"></param>
+            <param name="isModifier"></param>
+            <returns>The newly added extension</returns>
+        </member>
+        <member name="T:Hl7.Fhir.Model.ISystemAndCode">
+            <summary>
+            Provides a way to access the system and code from a Code&lt;T&gt; derived class, without having to mess
+            about with the generic types/additional nasty reflection
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.IValue`1">
+            <summary>Common generic Value property interface.</summary>
+            <typeparam name="T">The value type.</typeparam>
+        </member>
+        <member name="P:Hl7.Fhir.Model.IValue`1.Value">
+            <summary>Gets or sets the value</summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.INullableValue`1">
+            <summary>Common generic nullable value property interface.</summary>
+            <typeparam name="T">The value type.</typeparam>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Narrative">
+            <summary>
+            Human-readable summary of the resource (essential clinical and business information)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Narrative.TypeName">
+            <summary>
+            FHIR Type Name
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Model.Narrative.NarrativeStatus">
+            <summary>
+            The status of a resource narrative.
+            (url: http://hl7.org/fhir/ValueSet/narrative-status)
+            (system: http://hl7.org/fhir/narrative-status)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Narrative.NarrativeStatus.Generated">
+            <summary>
+            The contents of the narrative are entirely generated from the core elements in the content.
+            (system: http://hl7.org/fhir/narrative-status)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Narrative.NarrativeStatus.Extensions">
+            <summary>
+            The contents of the narrative are entirely generated from the core elements in the content and some of the content is generated from extensions. The narrative SHALL reflect the impact of all modifier extensions.
+            (system: http://hl7.org/fhir/narrative-status)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Narrative.NarrativeStatus.Additional">
+            <summary>
+            The contents of the narrative may contain additional information not found in the structured data. Note that there is no computable way to determine what the extra information is, other than by human inspection.
+            (system: http://hl7.org/fhir/narrative-status)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Model.Narrative.NarrativeStatus.Empty">
+            <summary>
+            The contents of the narrative are some equivalent of "No human-readable text provided in this case".
+            (system: http://hl7.org/fhir/narrative-status)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Narrative.StatusElement">
+            <summary>
+            generated | extensions | additional | empty
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Narrative.Status">
+            <summary>
+            generated | extensions | additional | empty
+            </summary>
+            <remarks>This uses the native .NET datatype, rather than the FHIR equivalent</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Model.Narrative.Div">
+            <summary>
+            Limited xhtml content
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Model.ResourceIdentityExtensions.ResourceIdentity(Hl7.Fhir.Model.Resource,System.String)">
+            <summary>
+            Returns the entire URI of the location that this resource was retrieved from
+            </summary>
+            <remarks>
+            It is not stored, but reconstructed from the components of the resource
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="T:Hl7.Fhir.Support.Poco.FhirTypeConstants">
+            <summary>
+            List of Fhir types constants. This will be removed when we introduce ModelSpace, but for now we will use this.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Support.Issue.Create(System.Int32,Hl7.Fhir.Model.OperationOutcome.IssueSeverity,Hl7.Fhir.Model.OperationOutcome.IssueType)">
+            <summary>Factory method.</summary>
+        </member>
+        <member name="T:Hl7.Fhir.Support.ResolvingConflictException">
+            <summary>
+            The exception that is thrown to report a resource resolving conflict.
+            <para>
+            Indicates that the source was unable to resolve a single target resource,
+            because it found multiple existing resources matching the specified identifier.
+            </para>
+            </summary>
+            <remarks>Generic replacement for the obsolete <seealso cref="T:Hl7.Fhir.Support.ResolvingConflictException"/>.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Support.ResolvingConflictException.ResourceUriConflict(System.Collections.Generic.IEnumerable{Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict})">
+            <summary>Generate a new <see cref="T:Hl7.Fhir.Support.ResolvingConflictException"/> to report multiple conflicting resources with the same Resource Uri identifier.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Support.ResolvingConflictException.CanonicalUrlConflict(System.Collections.Generic.IEnumerable{Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict})">
+            <summary>Generate a new <see cref="T:Hl7.Fhir.Support.ResolvingConflictException"/> to report multiple conflicting naming system resources with the same unique identifier.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Support.ResolvingConflictException.NamingSystemUniqueIdConflict(System.Collections.Generic.IEnumerable{Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict})">
+            <summary>Generate a new <see cref="T:Hl7.Fhir.Support.ResolvingConflictException"/> to report multiple conflicting NamingSystem resources with the same unique identifier.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Support.ResolvingConflictException.CodeSystemConflict(System.Collections.Generic.IEnumerable{Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict})">
+            <summary>Generate a new <see cref="T:Hl7.Fhir.Support.ResolvingConflictException"/> to report multiple conflicting CodeSystem resources with the same ValueSet url.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Support.ResolvingConflictException.ConceptMapUrlConflict(System.Collections.Generic.IEnumerable{Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict})">
+            <summary>Generate a new <see cref="T:Hl7.Fhir.Support.ResolvingConflictException"/> to report multiple conflicting ConceptMap resources with the same source or target url.</summary>
+        </member>
+        <member name="T:Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict">
+            <summary>
+            Provides information about a specific resolving conflict,
+            as reported by the <see cref="T:Hl7.Fhir.Support.ResolvingConflictException"/>.
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict.#ctor(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>Create a new <see cref="T:Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict"/> instance.</summary>
+            <param name="identifier">An identifier that matches multiple conflicting resources.</param>
+            <param name="origins">The original locations (e.g. file paths) of the conflicting resources that match the specified <paramref name="identifier"/> value.</param>
+        </member>
+        <member name="P:Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict.Identifier">
+            <summary>The identifier value matched by multiple conflicting resources.</summary>
+        </member>
+        <member name="P:Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict.Origins">
+            <summary>The original locations (e.g. file paths) of conflicting resources that match the specified <see cref="P:Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict.Identifier"/> value.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Support.ResolvingConflictException.#ctor(System.String,System.Collections.Generic.IEnumerable{Hl7.Fhir.Support.ResolvingConflictException.ResolvingConflict})">
+            <summary>
+            Create a new generic <see cref="T:Hl7.Fhir.Support.ResolvingConflictException"/> instance.
+            <para>
+            The <see cref="T:Hl7.Fhir.Support.ResolvingConflictException"/> class also provides static
+            factory methods to create exceptions for specific types of conflicts.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Support.ResolvingConflictException.Conflicts">
+            <summary>Returns a list of resolving conflicts.</summary>
+        </member>
+        <member name="T:Hl7.Fhir.Support.ResourceReferenceNotFoundException">
+            <summary>
+            The exception that is throw when an attempt to resolve an external resource reference fails.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Support.ResourceReferenceNotFoundException.Url">
+            <summary>Returns the url of the unresolved resource reference.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.PatchParameterExtensions.AddAddPatchParameter(Hl7.Fhir.Model.Parameters,System.String,System.String,Hl7.Fhir.Model.DataType)">
+            <summary>
+            Add an "add" patch operation as a parameter
+            </summary>
+            <param name="parameters">Parameters resource this operation should be added to</param>
+            <param name="path">Path at which to add the content</param>
+            <param name="name">Name of the property to add</param>
+            <param name="value">Value to add at nominated place</param>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.PatchParameterExtensions.AddInsertPatchParameter(Hl7.Fhir.Model.Parameters,System.String,Hl7.Fhir.Model.DataType,System.Int32)">
+            <summary>
+            Add an "insert" patch operation as a parameter
+            </summary>
+            <param name="parameters">Parameters resource this operation should be added to</param>
+            <param name="path">Path of the collection in which to insert the content</param>
+            <param name="value">Value to add at nominated place</param>
+            <param name="index">Index at which to insert</param>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.PatchParameterExtensions.AddDeletePatchParameter(Hl7.Fhir.Model.Parameters,System.String)">
+            <summary>
+            Add a "delete" patch operation as a parameter
+            </summary>
+            <param name="parameters">Parameters resource this operation should be added to</param>
+            <param name="path">Path of the content to delete (if found)</param>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.PatchParameterExtensions.AddReplacePatchParameter(Hl7.Fhir.Model.Parameters,System.String,Hl7.Fhir.Model.DataType)">
+            <summary>
+            Add a "replace" patch operation as a parameter
+            </summary>
+            <param name="parameters">Parameters resource this operation should be added to</param>      
+            <param name="path">Path of the content to replace</param>
+            <param name="value">value to replace it with</param>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.PatchParameterExtensions.AddMovePatchParameter(Hl7.Fhir.Model.Parameters,System.String,System.Int32,System.Int32)">
+            <summary>
+            Add a "move" patch operation as a parameter
+            </summary>
+            <param name="parameters">Parameters resource this operation should be added to</param>
+            <param name="path">Path of the collection in which to move the content</param>
+            <param name="source">List index to move from</param>
+            <param name="destination">List index to move to</param>
+        </member>
+        <member name="T:Hl7.Fhir.Rest.ResourceFormat">
+            <summary>
+            The supported formats for Fhir Resources
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ContentType.GetResourceFormatFromFormatParam(System.String)">
+            <summary>
+            Converts a format string to a ResourceFormat
+            </summary>
+            <param name="format">A format string, as used by the _format Url parameter</param>
+            <returns>The Resource format or the special value Unknow if the format was unrecognized</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ContentType.GetResourceFormatFromContentType(System.String)">
+            <summary>
+            Converts a content type to a ResourceFormat
+            </summary>
+            <param name="contentType">The content type, as it appears on e.g. a Http Content-Type header</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ContentType.IsValidResourceContentType(System.String)">
+            <summary>
+            Checks whether a given content type is valid as a content type for resource data
+            </summary>
+            <param name="contentType">The content type, as it appears on e.g. a Http Content-Type header</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ContentType.IsValidFormatParam(System.String)">
+            <summary>
+            Checks whether a given format parameter is a valid as a content type for resource data
+            </summary>
+            <param name="paramValue">The content type, as it appears on the URL parameter</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.EntryToHttpExtensions.getMethod(System.Nullable{Hl7.Fhir.Rest.HTTPVerb})">
+            <summary>
+            Converts bundle http verb to corresponding <see cref="T:System.Net.Http.HttpMethod"/>.
+            </summary>
+            <param name="verb"><see cref="T:Hl7.Fhir.Rest.HTTPVerb"/> specified by input bundle.</param>
+            <returns><see cref="T:System.Net.Http.HttpMethod"/> corresponding to verb specified in input bundle.</returns>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.EntryToHttpExtensions.SetUserAgentUsingReflection">
+            <summary>
+            Flag to control the setting of the User Agent string (different platforms have different abilities)
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.EntryToTypedEntryExtensions.ToTypedEntryResponse(Hl7.Fhir.Rest.EntryResponse,Hl7.Fhir.Specification.IStructureDefinitionSummaryProvider)">
+            <inheritdoc cref="M:Hl7.Fhir.Rest.EntryToTypedEntryExtensions.ToTypedEntryResponseAsync(Hl7.Fhir.Rest.EntryResponse,Hl7.Fhir.Specification.IStructureDefinitionSummaryProvider)" />
+        </member>
+        <member name="F:Hl7.Fhir.Rest.FhirClientSettings.VerifyFhirVersion">
+            <summary>
+            Whether or not to ask the server for a CapabilityStatement and verify FHIR version compatibility before
+            issuing requests to the server.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.FhirClientSettings.PreferredFormat">
+            <summary>
+            The preferred format of the content to be used when communicating with the FHIR server (XML or JSON)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.FhirClientSettings.UseFormatParameter">
+            <summary>
+            When passing the content preference, use the _format parameter instead of the request header
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.FhirClientSettings.Timeout">
+            <summary>
+            The timeout (in milliseconds) to be used when making calls to the FHIR server
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.FhirClientSettings.PreferredReturn">
+            <summary>
+            Should calls to Create, Update and transaction operations return the whole updated content, 
+            or an OperationOutcome?
+            </summary>
+            <remarks>Refer to specification section 2.1.0.5 (Managing Return Content)</remarks>
+            <remarks>Setting this to null, will ensure the client does not send a Preferred header</remarks>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.FhirClientSettings.PreferredParameterHandling">
+            <summary>
+            Should server return which search parameters were supported after executing a search?
+            If true, the server should return an error for any unknown or unsupported parameter, otherwise
+            the server may ignore any unknown or unsupported parameter.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.FhirClientSettings.PreferCompressedResponses">
+            <summary>
+            This will do 2 things:
+            1. Add the header Accept-Encoding: gzip, deflate
+            2. decompress any responses that have Content-Encoding: gzip (or deflate)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.FhirClientSettings.CompressRequestBody">
+            <summary>
+            Compress any Request bodies 
+            (warning, if a server does not handle compressed requests you will get a 415 response)
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.FhirClientSettings.#ctor(Hl7.Fhir.Rest.FhirClientSettings)">
+            <summary>Clone constructor. Generates a new <see cref="T:Hl7.Fhir.Rest.FhirClientSettings"/> instance initialized from the state of the specified instance.</summary>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.FhirClientSettings.CopyTo(Hl7.Fhir.Rest.FhirClientSettings)">
+            <summary>Copy all configuration settings to another instance.</summary>
+            <param name="other">Another <see cref="T:Hl7.Fhir.Rest.FhirClientSettings"/> instance.</param>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.FhirClientSettings.Clone">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Rest.FhirClientSettings"/> object that is a copy of the current instance.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.FhirClientSettings.CreateDefault">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Rest.FhirClientSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.HttpUtil.CONTENTLOCATION">
+            <summary>
+            "Content-Location" found in the HTTP Headers
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.HttpUtil.LOCATION">
+            <summary>
+            "Location" found in the HTTP Headers
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.HttpUtil.LASTMODIFIED">
+            <summary>
+            "Last-Modified" found in the HTTP Headers
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.HttpUtil.ETAG">
+            <summary>
+            "ETag" found in the HTTP Headers
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.HttpUtil.RESTPARAM_FORMAT">
+            <summary>
+            "_format" found as a parameter on the REST URL
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.HttpUtil.HISTORY_PARAM_SINCE">
+            <summary>
+            "_since" found as a parameter on the REST History operation URL
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.HttpUtil.HISTORY_PARAM_COUNT">
+            <summary>
+            "_count" found as a parameter on the REST History operation URL
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.SearchParameterHandling.Strict">
+            <summary>
+            Server should return an error for any unknown or unsupported parameter        
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.SearchParameterHandling.Lenient">
+            <summary>
+            Server should ignore any unknown or unsupported parameter
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.Prefer.ReturnRepresentation">
+            <summary>
+            Prefer to receive the full resource in the body after completion of the interaction
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.Prefer.ReturnMinimal">
+            <summary>
+            Prefer to not a receive a body after completion of the interaction
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.Prefer.OperationOutcome">
+            <summary>
+            Prefer to receive an OperationOutcome resource containing hints and warnings about the 
+            operation rather than the full resource
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.Prefer.RespondAsync">
+            <summary>
+            Prefer to run the operation as an asynchronous request
+            (http://hl7.org/fhir/r4/async.html)
+            - This may also be applicable in prior versions (though not part of that stamdard)
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Rest.ResourceIdentity">
+            <summary>
+            ResourceIdentity represents a Resource's Uri and can be used to construct such uri's or retrieve parts of the uri. 
+            
+            ResourceIdentities exist in three forms: 
+              * As an url, where urls may be relative or absolute. The url form can be used in RESTful 
+                calls to a FHIR server to represent a specific instance of a resource on that server. 
+              * As the target of an http anchor, in which case the identity is just an id. This kind of id is used when
+                the resource is contained within another resource and the id is "internal": valid only within the scope of
+                that container resource. It can be referenced by just its id, prefixed by the http anchor '#' character.
+              * As an urn, useful when you need to identify a resource outside of the context of a RESTful exchange,
+                such as in a Document or Message or when the resource has not yet been assigned an id, like in a
+                batch transaction.
+            
+            Depending on the form of ResourceIdentity, the identity consists of the following parts:
+            
+              * Url: the "base", in this case the server's base FHIR service endpoint; the "resource type"; the "logical id" and the "version id",
+                all parts are optional, except the logical id.
+              * Urn: the "base", in this case either urn:oid: or urn:uuid: and the "logical id", both are required
+              * Anchor: just the "logical id"
+            
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.#ctor(System.String)">
+            <summary>
+            Creates an Resource Identity instance for a Resource given a resource's location.
+            </summary>
+            <param name="uri">Relative or absolute location of a Resource</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.#ctor(System.Uri)">
+            <summary>
+            Creates an Resource Identity instance for a Resource given a resource's location.
+            </summary>
+            <param name="uri">Relative or absolute location of a Resource</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.Build(System.Uri,System.String,System.String,System.String)">
+            <summary>
+            Creates an absolute url representing a Resource identitity for a given resource type, id and optional version.
+            </summary>
+            <param name="baseUrl">Absolute path giving the FHIR service endpoint</param>
+            <param name="resourceType">Name of the collection (resource type)</param>
+            <param name="id">The resource's logical id</param>
+            <param name="vid">The resource's version id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.Build(System.String,System.String,System.String)">
+            <summary>
+            Creates a relative url representing a Resource identitity for a given resource type, id and optional version.
+            </summary>
+            <param name="resourceType">The resource type</param>
+            <param name="id">The resource's logical id</param>
+            <param name="vid">The resource's version id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.Build(Hl7.Fhir.Rest.UrnType,System.String)">
+            <summary>
+            Creates an absolute urn representing the Resource identitity outside of a REST context
+            </summary>
+            <param name="urnType">Type of urn to create, either OID or UUID</param>
+            <param name="id">The resource's logical id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.Build(System.Uri,System.String)">
+            <summary>
+            Creates an absolute urn representing the Resource identitity outside of a REST context
+            </summary>
+            <param name="baseUrn">An urn, either an urn:oid: or urn:uuid:</param>
+            <param name="id">The resource's logical id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.Build(System.String)">
+            <summary>
+            Creates an local id that can be the target of an anchored reference to a contained resource elative url representing a Resource identitity for a given resource type, id and optional version.
+            </summary>
+            <param name="id">The resource's logical id</param>
+            <returns></returns>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.ResourceIdentity.BaseUri">
+            <summary>
+            This is the ResourceIdentity's base, either an url which is the FHIR service endpoint where the resource is located or
+            an urn (urn:oid or urn:uuid).
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.ResourceIdentity.ResourceType">
+            <summary>
+            The name of the resource as it occurs in the Resource url
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.ResourceIdentity.Id">
+            <summary>
+            The logical id of the resource as it occurs in the Resource url (without the Version)
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.ResourceIdentity.VersionId">
+            <summary>
+            The version id of the resource as it occurs in the Resource url
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.ResourceIdentity.HasVersion">
+            <summary>
+            Indicates whether this ResourceIdentity is version-specific (has a _history part)
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.WithVersion(System.String)">
+            <summary>
+            Returns a new ResourceIdentity made specific for the given version
+            </summary>
+            <param name="version">The version to add to the ResourceIdentity (part after the _history/)</param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.MakeRelative">
+            <summary>
+            Returns a Uri that is a relative version of a url form ResourceIdentity
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.WithoutVersion">
+            <summary>
+            Turns a version-specific ResourceIdentity into a non-version-specific ResourceIdentity
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.WithBase(System.String)">
+            <summary>
+            Relocate an absolute identity to a new base, or make a relative identity absolute to a base
+            </summary>
+            <param name="baseUri"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.ResourceIdentity.IsTargetOf(Hl7.Fhir.Rest.ResourceIdentity)">
+            <summary>
+            Find out whether one ResourceIdentity references another ResourceIdentity
+            </summary>
+            <param name="reference"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.RestUrl.AddPath(System.String[])">
+            <summary>
+            Add additional components to the end of the RestUrl
+            </summary>
+            <param name="components">one or more path components to add</param>
+            <returns>The current RestUrl, so multiple AddPath statements can be combined in a fluent way.</returns>
+            <example>If the current path is "http://hl7.org/svc", then adding ("fhir", "Patient") would
+            return in a new RestUrl "http://hl7.org/svc/fhir/Patient"</example>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.RestUrl.AddParam(System.String,System.String)">
+            <summary>
+            Add a query parameter to the RestUrl
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.RestUrl.IsEndpointFor(System.Uri)">
+            <summary>
+            Tests to see if this RestURL is contained at the base address provided in <paramref name="other"/>
+            (This is a case insensitive test)
+            </summary>
+            <param name="other"></param>
+            <returns>true when the other is the starting portion of the given <paramref name="other"/> URL</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.RestUrl.IsEndpointFor(System.String)">
+            <summary>
+            Tests to see if this RestURL is contained at the base address provided in <paramref name="other"/>
+            (This is a case insensitive test)
+            </summary>
+            <param name="other"></param>
+            <returns>true when the other is the starting portion of the given <paramref name="other"/> URL</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.RestUrl.IsSameUrl(Hl7.Fhir.Rest.RestUrl)">
+            <summary>
+            Implements comparison of two RestUrls based on the FHIR rules set out in http.html#2.1.0.1
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.RestUrl.NavigateTo(System.String)">
+            <summary>
+            Returs a new RestUrl that represents a location after navigating to the specified path
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+            <example>If the current path is "http://hl7.org/svc/patient", NavigatingTo("../observation") will 
+            result in a ResourceLocation of "http://hl7.org/svc/observation" whereas if the current path is
+            "http://hl7.org/svc/ (note the slash), NavigatingTo("../observation") will 
+            result in a ResourceLocation of "http://hl7.org/svc/observation" 
+            </example>
+        </member>
+        <member name="T:Hl7.Fhir.Rest.SearchParams">
+            <summary>
+            Contains criteria that can be passed to a search operation or conditional update/delete/create
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.SearchParams.RESERVED_PARAMETERS">
+            <summary>
+            List of all the search parameter that have some special meaning.
+            Primarily used to filter to the non-special parameters.
+            Notice that _query, _text, _filter and _content are predefined searches in the standard,
+            but cannot be parsed as regular criteria. So they are included in the RESERVED_PARAMETERS 
+            and thus not included in the Parameters property
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.SearchParams.Add(System.String,System.String)">
+            <summary>
+            Add a parameter with a given name and value.
+            </summary>
+            <param name="name">The name of the parameter</param>
+            <param name="value">The value of the parameter as a FHIR datatype or Resource</param>
+            <returns>this (Parameters), so you can chain AddParameter calls</returns>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.SearchParams.Parameters">
+            <summary>
+            The 'regular' parameters. The parameters that have no special meaning.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.SearchParams.Query">
+            <summary>
+            Gets or sets the special _query search parameter which asks the server to run a 
+            specific named query instead of the standard FHIR search.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.SearchParams.Text">
+            <summary>
+            Gets or sets the special _text search parameter which which search on the narrative of the resource. 
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.SearchParams.Content">
+            <summary>
+            Gets or sets the special _text search parameter which which search on the entire content of the resource.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.SearchParams.Count">
+            <summary>
+            Gets or sets the special _count search parameter, which limits the number
+            of mathes returned per page in the pages search result
+            </summary>
+            <remark>The number of resources returned from the search may exceed this
+            parameter, since additional _included resources for the matches are returned
+            as well</remark>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.SearchParams.Summary">
+            <summary>
+            Gets or sets the special _summary search parameter. If set to true,
+            the server will not return all elements in each matching resource, but just
+            the most important ones.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.SearchParams.Filter">
+            <summary>
+            Gets or sets the special _filter search parameter to supply an advanced query expression
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.SearchParams.SEARCH_PARAM_SORT">
+            <summary>
+            "_sort"
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.SearchParams.Sort">
+            <summary>
+            Gets or sets the _sort parameter, to modify the sort order of the search result.
+            Uses a tuple (name, sortorder).
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Rest.SearchParams.Include">
+            <summary>
+            Returns a modifiable collection of _include parameters. These are used to include
+            resources in the search result that the matched resources refer to.
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.IncludeModifier.None">
+            <summary>
+            No modifier on the include/revinclude parameter
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.IncludeModifier.Iterate">
+            <summary>
+            R4 only: Allows the include/revinclude process to iterate
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.IncludeModifier.Recurse">
+            <summary>
+            STU3 only: Allows the include/revinclude process to recurse
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.SummaryType.True">
+            <summary>
+            Return only those elements marked as "summary" in the base definition of the resource(s)
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.SummaryType.Text">
+            <summary>
+            Return only the "text" element, and any mandatory elements
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.SummaryType.Data">
+            <summary>
+            Remove the text element
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.SummaryType.Count">
+            <summary>
+            Search only: just return a count of the matching resources, without returning the actual matches
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Rest.SummaryType.False">
+            <summary>
+            Return all parts of the resource(s)
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.TaskExtensions.WaitNoResult(System.Threading.Tasks.Task)">
+            <summary>
+            Use the WaitNoResult so that the exception handling throws what you expect,
+            and not the Aggregate exception
+            </summary>
+            <param name="task"></param>
+        </member>
+        <member name="T:Hl7.Fhir.Rest.UriParamList">
+            <summary>
+            Represents a list of FHIR search parameters, which is based on a list of (key,value) tuples,
+            where the key may have a modifier appended. 
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.UriParamList.SplitParam(System.String)">
+            <summary>
+            Parses the possibly escaped key=value query parameter into a (key,value) Tuple
+            </summary>
+            <param name="param"></param>
+            <returns>A Tuple&lt;string,string&gt; containing the key and value. Value maybe null if
+            only the key was specified as a query parameter.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.UriParamList.MakeParam(System.String,System.String)">
+            <summary>
+            Converts a key,value pair into a query parameters, escaping the key and value
+            of necessary.
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Rest.UriParamList.ToQueryString">
+            <summary>
+            Builds a query string based on a set of key,value pairs
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.FhirRelease">
+            <summary>
+            The major FHIR publication releases.
+            </summary>
+            <remarks>Note: this is set is ordered, so "older release" is less than "newer release".</remarks>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.FhirRelease.DSTU1">
+            <summary>
+            FHIR Release DSTU1
+            http://hl7.org/fhir/DSTU1
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.FhirRelease.DSTU2">
+            <summary>
+            FHIR Release DSTU2 
+            http://hl7.org/fhir/DSTU2
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.FhirRelease.STU3">
+            <summary>
+            FHIR Release STU3 
+            http://hl7.org/fhir/STU3
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.FhirRelease.R4">
+            <summary>
+            FHIR Release 4 
+            http://hl7.org/fhir/R4
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.FhirRelease.R5">
+            <summary>
+            FHIR Release 5 
+            </summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.FhirRelease.R4B">
+            <summary>
+            FHIR Release 4B 
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy">
+            <summary>Defines options for the <see cref="T:Hl7.Fhir.Specification.Source.CachedResolver"/> that determine how to load a resource.</summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy.LoadOnDemand">
+            <summary>Return from cache, if present. Otherwise (re-)load from source and update cache.</summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy.LoadFromCache">
+            <summary>Return from cache, if present. Do NOT (re-)load from source. Do NOT update cache.</summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy.LoadFromSource">
+            <summary>Force (re-)load from source and update cache.</summary>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.Source.CachedResolver">
+            <summary>Reads and caches FHIR artifacts (Profiles, ValueSets, ...) from an internal <see cref="T:Hl7.Fhir.Specification.Source.IResourceResolver"/> instance.</summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.Source.CachedResolver.DEFAULT_CACHE_DURATION">
+            <summary>Default expiration time for cached entries.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.#ctor(Hl7.Fhir.Specification.Source.ISyncOrAsyncResourceResolver,System.Int32)">
+            <summary>Creates a new artifact resolver that caches loaded resources in memory.</summary>
+            <param name="source">Resolver from which artifacts are initially resolved on a cache miss.</param>
+            <param name="cacheDuration">Default expiration time of a cache entry, in seconds.</param>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Source.CachedResolver.Source">
+            <summary>
+            Returns the resolver for which access is cached, as specified in the constructor.
+            </summary>
+            <remarks>May return <code>null</code> if the source is an exclusively asynchronous resolver.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Source.CachedResolver.AsyncResolver">
+            <summary>
+            Returns the resolver for which access is cached, as specified in the constructor.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Source.CachedResolver.CacheDuration">
+            <summary>Gets the default expiration time of a cache entry.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByUri(System.String)">
+            <inheritdoc cref="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByUriAsync(System.String)"/>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByUriAsync(System.String)">
+            <summary>Retrieve the artifact with the specified url.</summary>
+            <param name="url">The url of the target artifact.</param>
+            <returns>A <see cref="T:Hl7.Fhir.Model.Resource"/> instance, or <c>null</c> if unavailable.</returns>
+            <remarks>Return data from memory cache if available, otherwise load on demand from the internal artifact source.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByUri(System.String,Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy)">
+            <inheritdoc cref="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByUriAsync(System.String,Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy)"/>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByUriAsync(System.String,Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy)">
+            <summary>Retrieve the artifact with the specified url.</summary>
+            <param name="url">The url of the target artifact.</param>
+            <param name="strategy">Option flag to control the loading strategy.</param>
+            <returns>A <see cref="T:Hl7.Fhir.Model.Resource"/> instance, or <c>null</c> if unavailable.</returns>
+            <remarks>Return data from memory cache if available, otherwise load on demand from the internal artifact source.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByCanonicalUri(System.String)">
+            <inheritdoc cref="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByCanonicalUriAsync(System.String)" />
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByCanonicalUriAsync(System.String)">
+            <summary>Retrieve the conformance resource with the specified canonical url.</summary>
+            <param name="url">The canonical url of the target conformance resource.</param>
+            <returns>A conformance <see cref="T:Hl7.Fhir.Model.Resource"/> instance, or <c>null</c> if unavailable.</returns>
+            <remarks>Return data from memory cache if available, otherwise load on demand from the internal artifact source.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByCanonicalUri(System.String,Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy)">
+            <inheritdoc cref="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByCanonicalUriAsync(System.String,Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy)" />
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.ResolveByCanonicalUriAsync(System.String,Hl7.Fhir.Specification.Source.CachedResolverLoadingStrategy)">
+            <summary>Retrieve the conformance resource with the specified canonical url.</summary>
+            <param name="url">The canonical url of the target conformance resource.</param>
+            <param name="strategy">Option flag to control the loading strategy.</param>
+            <returns>A conformance <see cref="T:Hl7.Fhir.Model.Resource"/> instance, or <c>null</c> if unavailable.</returns>
+            <remarks>Return data from memory cache if available, otherwise load on demand from the internal artifact source.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.InvalidateByUri(System.String)">
+            <summary>Clear the cache entry for the artifact with the specified url, if it exists.</summary>
+            <param name="url">The url of the target resource.</param>
+            <returns><c>true</c> if succesful, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.InvalidateByCanonicalUri(System.String)">
+            <summary>Clear the cache entry for the conformance resource with the specified canonical uri, if it exists.</summary>
+            <param name="url">The canonical url of the target conformance resource.</param>
+            <returns><c>true</c> if succesful, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.Clear">
+            <summary>Clear the memory cache by removing all existing cache entries.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.IsCachedUri(System.String)">
+            <summary>Determines if the memory cache contains a resource with the specified url.</summary>
+            <returns><c>true</c> if the resource is cached, or <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.IsCachedCanonicalUri(System.String)">
+            <summary>Determines if the memory cache contains a conformance resource with the specified canonical url.</summary>
+            <returns><c>true</c> if the conformance resource is cached, or <c>false</c> otherwise.</returns>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.Source.CachedResolver.LoadResourceEventArgs">
+            <summary>Event arguments for the <see cref="T:Hl7.Fhir.Specification.Source.CachedResolver.LoadResourceEventHandler"/> delegate.</summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Source.CachedResolver.LoadResourceEventArgs.Url">
+            <summary>Returns the url of the cached resource.</summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Source.CachedResolver.LoadResourceEventArgs.Resource">
+            <summary>Returns a reference to the cached resource.</summary>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.Source.CachedResolver.LoadResourceEventHandler">
+            <summary>Handles the <see cref="E:Hl7.Fhir.Specification.Source.CachedResolver.Load"/> event that is fired when a new resources is loaded into the cache.</summary>
+        </member>
+        <member name="E:Hl7.Fhir.Specification.Source.CachedResolver.Load">
+            <summary>Occurs when a artifact is loaded into the cache.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.CachedResolver.OnLoad(System.String,Hl7.Fhir.Model.Resource)">
+            <summary>Called when an artifact is loaded into the cache.</summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Source.CachedResolver.CacheEntry`1.IsExpired">
+            <summary>Returns a boolean value that indicates if the cache entry is expired.</summary>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.Source.IResourceResolver">
+            <summary>Interface for resolving FHIR artifacts by (canonical) uri.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.IResourceResolver.ResolveByUri(System.String)">
+            <summary>Find a resource based on its relative or absolute uri.</summary>
+            <param name="uri">A resource uri.</param>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.IResourceResolver.ResolveByCanonicalUri(System.String)">
+            <summary>Find a (conformance) resource based on its canonical uri.</summary>
+            <param name="uri">The canonical url of a (conformance) resource.</param>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.IAsyncResourceResolver.ResolveByUriAsync(System.String)">
+            <summary>Find a resource based on its relative or absolute uri.</summary>
+            <param name="uri">A resource uri.</param>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.IAsyncResourceResolver.ResolveByCanonicalUriAsync(System.String)">
+            <summary>Find a (conformance) resource based on its canonical uri.</summary>
+            <param name="uri">The canonical url of a (conformance) resource.</param>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.Source.ISyncOrAsyncResourceResolver">
+            <summary>
+            Empty marker interface to allow sync-backwards compatible code to support both sync and async resolvers.
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.Source.MultiResolver">
+            <summary>
+            Reads FHIR artifacts (Profiles, ValueSets, ...) from a list of other IArtifactSources
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Source.MultiResolver.Sources">
+            <summary>
+            Return all child resolvers that support synchronous resolution.
+            </summary>
+            <remarks>The collections returned by the <see cref="P:Hl7.Fhir.Specification.Source.MultiResolver.Sources"/> and <see cref="P:Hl7.Fhir.Specification.Source.MultiResolver.AsyncSources" /> properties are 
+            not necessarily disjunct.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Source.MultiResolver.AsyncSources">
+            <summary>
+            Return all child resolvers that support asynchronous resolution.
+            </summary>
+            <remarks>The collections returned by the <see cref="P:Hl7.Fhir.Specification.Source.MultiResolver.AsyncSources"/> and <see cref="P:Hl7.Fhir.Specification.Source.MultiResolver.Sources" /> properties are 
+            not necessarily disjunct.</remarks>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.Source.SyncToAsyncResolver">
+            <summary>
+            Implements <see cref="T:Hl7.Fhir.Specification.Source.IAsyncResourceResolver" /> on top of an <see cref="T:Hl7.Fhir.Specification.Source.IResourceResolver" />
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Source.SyncToAsyncResolverExtensions.AsAsync(Hl7.Fhir.Specification.Source.ISyncOrAsyncResourceResolver)">
+            <summary>
+            Converts a (possibly non-async) resource resolver to an async one.
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+            <remarks>Note that this async method will block on the possibly synchronous source. This method
+            is meant for temporary backwards-compatiblity reasons only.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.ClosureParameters.Name">
+            <summary>
+            The name that defines the particular context for the subsumption based closure table.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.ClosureParameters.Concept">
+            <summary>
+            Concepts to add to the closure table.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.ClosureParameters.Version">
+            <summary>
+            A request to resynchronise - request to send all new entries since the nominated version was sent by the server.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.LookupParameters.Code">
+            <summary>
+            The code that is to be located. If a code is provided, a system must be provided.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.LookupParameters.System">
+            <summary>
+            The system for the code that is to be located.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.LookupParameters.Version">
+            <summary>
+            The version of the system, if one was provided in the source data.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.LookupParameters.Coding">
+            <summary>
+            A coding to look up.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.LookupParameters.Date">
+            <summary>
+            The date for which the information should be returned.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.LookupParameters.DisplayLanguage">
+            <summary>
+            The requested language for display.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.LookupParameters.Property">
+            <summary>
+            A property that the client wishes to be returned in the output.
+            </summary>
+            <remarks>If no properties are specified, the server chooses what to return.</remarks>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Terminology.OperationValidCodeExtensions.ToOperationOutcome(Hl7.Fhir.Model.Parameters)">
+            <summary>
+            This will tranform the Out Paramters of operation ValidCode to an OperationOutcome.
+            </summary>
+            <param name="parameters">the Out Paramters of operation ValidCode</param>
+            <returns>OperationOutcome from parameters</returns>
+            <remarks>This function will be removed, when the obsolete method ITerminologyService.ValidCode() 
+            will be removed.</remarks>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.SubsumesParameters.CodeA">
+            <summary>
+            The "A" code that is to be tested. If a code is provided, a system must be provided.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.SubsumesParameters.CodeB">
+            <summary>
+            The "B" code that is to be tested. If a code is provided, a system must be provided.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.SubsumesParameters.System">
+            <summary>
+            The code system in which subsumption testing is to be performed. 
+            This must be provided unless the operation is invoked on a code system instance.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.SubsumesParameters.Version">
+            <summary>
+            The version of the code system, if one was provided in the source data.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.SubsumesParameters.CodingA">
+            <summary>
+            The "A" Coding that is to be tested.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.SubsumesParameters.CodingB">
+            <summary>
+            The "B" Coding that is to be tested.
+            </summary>
+        </member>
+        <member name="T:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings">
+            <summary>Configuration settings for the "ValueSetExpander" class.</summary>
+        </member>
+        <member name="F:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.DefaultMaxExpansionSize">
+            <summary>Default value of the <see cref="P:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.MaxExpansionSize"/> property.</summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.ValueSetSource">
+            <summary>
+            The <see cref="T:Hl7.Fhir.Specification.Source.IResourceResolver"/> or <see cref="T:Hl7.Fhir.Specification.Source.IAsyncResourceResolver" /> to use when a reference 
+            to another valueset is encountered.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.MaxExpansionSize">
+            <summary>
+            The maximum number of concepts to include in an expansion before the expander raises an error.
+            </summary>
+        </member>
+        <member name="P:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.IncludeDesignations">
+            <summary>
+            Controls whether concept designations are to be included or excluded in value set expansions
+            </summary>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.#ctor">
+            <summary>Default constructor. Creates a new <see cref="T:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.#ctor(Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings)">
+            <summary>Clone constructor. Generates a new <see cref="T:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings"/> instance initialized from the state of the specified instance.</summary>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.CopyTo(Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings)">
+            <summary>Copy all configuration settings to another instance.</summary>
+            <param name="other">Another <see cref="T:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings"/> instance.</param>
+            <exception cref="T:System.ArgumentNullException">The specified argument is <c>null</c>.</exception>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.Clone">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings"/> object that is a copy of the current instance.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings.CreateDefault">
+            <summary>Creates a new <see cref="T:Hl7.Fhir.Specification.Terminology.ValueSetExpanderSettings"/> instance with default property values.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Validation.ValidationContextExtensions.SetValidateRecursively(System.ComponentModel.DataAnnotations.ValidationContext,System.Boolean)">
+            <summary>
+            Alters the ValidationContext to indicate that validation should or should not recurse into nested objects
+            (i.e. validate members of the validated objects complex members recursively)
+            </summary>
+            <param name="ctx"></param>
+            <param name="recursively"></param>
+        </member>
+        <member name="M:Hl7.Fhir.Validation.ValidationContextExtensions.ValidateRecursively(System.ComponentModel.DataAnnotations.ValidationContext)">
+            <summary>
+            Gets the indication from the ValidationContext whether validation should recurse into nested objects
+            </summary>
+            <param name="ctx"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Validation.ValidationContextExtensions.SetResolver(System.ComponentModel.DataAnnotations.ValidationContext,System.Func{System.String,Hl7.Fhir.Model.Resource})">
+            <summary>
+            Sets the callback to resolve a url to a resource when FhirPath validation encounters 
+            a call to resolve() in an invariant.
+            </summary>
+            <param name="ctx"></param>
+            <param name="resolver"></param>
+        </member>
+        <member name="M:Hl7.Fhir.Validation.ValidationContextExtensions.Resolver(System.ComponentModel.DataAnnotations.ValidationContext)">
+            <summary>
+            Gets the callback that is used by FhirPath validation when an invariant invokes the resolve() function.
+            </summary>
+            <param name="ctx"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.FhirReleaseParser.Parse(System.String)">
+            <summary>
+            Returns a FHIR version as an enum from a version number
+            </summary>
+            <param name="version">Fhir Release version number</param>
+            <returns>Official FHIR Release</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.FhirReleaseParser.TryParse(System.String,System.Nullable{Hl7.Fhir.Specification.FhirRelease}@)">
+            <summary>
+            Converts a version number into a specific official FHIR Release
+            </summary>
+            <param name="version">Fhir Release version number</param>
+            <param name="release">Official FHIR Release</param>
+            <returns>true if the conversion succeeded; false otherwise.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.FhirReleaseParser.FhirVersionFromRelease(Hl7.Fhir.Specification.FhirRelease)">
+            <summary>
+            Returns the version number of the latest official FHIR releases
+            </summary>
+            <param name="fhirRelease">Official FHIR release</param>
+            <returns>Latest version number</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.FhirReleaseParser.FhirReleaseFromMimeVersion(System.String)">
+            <summary>
+            Returns the official FHIR version based on the value of a MIME-Type parameter 'fhirversion'
+            </summary>
+            <param name="fhirMimeVersion">'fhirversion' MIME-Type parameter</param>
+            <returns>Official FHIR Release</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.FhirReleaseParser.TryGetFhirReleaseFromMimeVersion(System.String,System.Nullable{Hl7.Fhir.Specification.FhirRelease}@)">
+            <summary>
+            Gets the official FHIR version based on the value of a MIME-Type parameter 'fhirversion'
+            </summary>
+            <param name="fhirMimeVersion">'fhirversion' MIME-Type parameter</param>
+            <param name="release">Official FHIR Release</param>
+            <returns>true if the conversion succeeded; false otherwise.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.FhirReleaseParser.MimeVersionFromFhirRelease(Hl7.Fhir.Specification.FhirRelease)">
+            <summary>
+            Returns the value of the 'fhirversion' MIME-type parameter corresponding to a specific FHIR Version
+            </summary>
+            <param name="fhirRelease">Official FHIR release</param>
+            <returns>Corresponding 'fhirversion' MIME-Type value, see http://hl7.org/fhir/http.html#version-parameter
+            for more information.</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.FhirReleaseParser.FhirReleaseFromCorePackageName(System.String)">
+            <summary>
+            Returns the corresponding FHIR release version of the specific FHIR Core package from HL7
+            </summary>
+            <param name="packageName">FHIR Core package name</param>
+            <returns>Official FHIR Release</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.FhirReleaseParser.TryGetFhirReleaseFromCorePackageName(System.String,System.Nullable{Hl7.Fhir.Specification.FhirRelease}@)">
+            <summary>
+            Gets the corresponding FHIR release version of the specific FHIR Core package from HL7
+            </summary>
+            <param name="packageName">FHIR Core package name</param>
+            <param name="release">Official FHIR Release</param>
+            <returns>true if the conversion succeeded; false otherwise</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.FhirReleaseParser.CorePackageNameFromFhirRelease(Hl7.Fhir.Specification.FhirRelease)">
+            <summary>
+            Returns the corresponding FHIR core package of the specific FHIR Release version
+            </summary>
+            <param name="fhirRelease">FHIR Release version</param>
+            <returns>FHIR Core package name</returns>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.NullExtensions.IsNullOrEmpty(System.Collections.IList)">
+            <summary>Determines if the list is <c>null</c> or empty.</summary>
+        </member>
+        <member name="M:Hl7.Fhir.Utility.NullExtensions.IsNullOrEmpty(Hl7.Fhir.Model.Base)">
+            <summary>
+            Determines if the element is <c>null</c> or empty.
+            For primitive values, verifies that the value equals <c>null</c>.
+            For primitive string values, verifies that the string value is <c>null</c> or empty.
+            Recursively verifies that all <see cref="P:Hl7.Fhir.Model.Base.Children"/> instances are <c>null</c> or empty.
+            </summary>
+        </member>
+    </members>
+</doc>
