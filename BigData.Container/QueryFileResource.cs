@@ -46,7 +46,7 @@ namespace BigData.Container.Create
             CloudTable table = tableClient.GetTableReference(_dataLogTrackingTable);
 
             IQueryable<ResourceUploadLogQuery> linqQuery = table.CreateQuery<ResourceUploadLogEntity>()
-            .Where(x => x.RowKey.CompareTo(resourceId) >= 0 && x.PartitionKey == containerName)
+            .Where(x => x.ResourceId == resourceId && x.PartitionKey == containerName)
             .Select(x => new ResourceUploadLogQuery()
             {
                 ContainerName = x.ContainerName,
