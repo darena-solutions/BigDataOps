@@ -24,14 +24,16 @@ namespace BigData.Container.Create
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-
+            /*
             var _config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
             string dataLakeConnectionString = _config["Values:AzureWebJobsStorage"];
+            */
+            string dataLakeConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
 
             DataLakeServiceClient _dataLakeServiceClient = new DataLakeServiceClient(dataLakeConnectionString);
 

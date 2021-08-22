@@ -26,14 +26,18 @@ namespace BigData.Container.Create
         {
             log.LogInformation("Create Resource Object Initiated");
 
+            /*
             var _config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
             string dataLakeConnectionString = _config["Values:AzureWebJobsStorage"];
             string _dataLogTrackingTable = _config["Values:AzureWebJobsLogTable"];
+            */
+            string dataLakeConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
+            string _dataLogTrackingTable = Environment.GetEnvironmentVariable("AzureWebJobsLogTable", EnvironmentVariableTarget.Process);
 
 
             string containerName = req.Query["ContainerName"];

@@ -24,16 +24,22 @@ namespace BigData.Container.Create
             ExecutionContext context,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("Trigger for Creating a Container!");
 
+            /*
             var _config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
             string dataLakeConnectionString = _config["Values:AzureWebJobsStorage"];
             string _dataLogTrackingTable = _config["Values:AzureWebJobsLogTable"];
+            string _fileUploadLogTrackingTable = _config["Values:AzureUploadsLogTable"];
+            */
+            string dataLakeConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
+            string _dataLogTrackingTable = Environment.GetEnvironmentVariable("AzureWebJobsLogTable", EnvironmentVariableTarget.Process);
+            string _fileUploadLogTrackingTable = Environment.GetEnvironmentVariable("AzureUploadsLogTable", EnvironmentVariableTarget.Process);
 
             DataLakeServiceClient _dataLakeServiceClient = new DataLakeServiceClient(dataLakeConnectionString);
 
@@ -60,13 +66,19 @@ namespace BigData.Container.Create
             {
                 DataLakeFileSystemClient _dataLakeFileSystemClient = _dataLakeServiceClient.GetFileSystemClient(containerName);
 
-                CloudStorageAccount _cloudStorageAccount =CloudStorageAccount.Parse(dataLakeConnectionString);
+                _dataLakeFileSystemClient.Create(Azure.Storage.Files.DataLake.Models.PublicAccessType.FileSystem);
+
+                CloudStorageAccount _cloudStorageAccount = CloudStorageAccount.Parse(dataLakeConnectionString);
+
                 CloudTableClient tableClient = _cloudStorageAccount.CreateCloudTableClient(new TableClientConfiguration());
+
                 CloudTable table = tableClient.GetTableReference(_dataLogTrackingTable);
 
-                await _dataLakeFileSystemClient.CreateAsync(Azure.Storage.Files.DataLake.Models.PublicAccessType.FileSystem);
                 await table.CreateIfNotExistsAsync();
-                
+
+                table = tableClient.GetTableReference(_fileUploadLogTrackingTable);
+                await table.CreateIfNotExistsAsync();
+
                 return new OkObjectResult(true);
             }
             catch(Exception ex)

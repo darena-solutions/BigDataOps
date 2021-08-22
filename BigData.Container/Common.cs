@@ -45,4 +45,36 @@ namespace BigData.Container.Create
         public string Resource { get; set; }
     }
 
+    public class ResourceUploadLogEntity : TableEntity
+    {
+        public ResourceUploadLogEntity() { }
+        public ResourceUploadLogEntity(string containerNamePK, string resourceIdRK)
+        {
+            PartitionKey = containerNamePK;
+            RowKey = resourceIdRK;
+        }
+        public string ContainerName { get; set; }
+        public string ResourceId { get; set; }
+        public string ResourceName { get; set; }
+        public string ResourceType { get; set; }
+        public string ResourceStatus { get; set; }
+        public string ResourcePath { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
+
+    public class ResourceUploadLogQuery
+    {
+        public string ContainerName { get; set; }
+        public string ResourceEntityId { get; set; }
+        public string ResourceName { get; set; }
+        public string ResourceType { get; set; }
+        public string ResourceStatus { get; set; }
+        //public string ResourcePath { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+    }
+
+
+
 }
