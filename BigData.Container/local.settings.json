@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "SynapzeConnString": "DataSource=fhir-analytics-engine-ondemand.sql.azuresynapse.net;UserID=sqladminuser;Password=DARENAtesting@123;InitialCatalog=FHIR_DEV;MultipleActiveResultSets=true",
+    "AzureUploadsLogTable": "FileUploadLogTable",
+    "AzureWebJobsLogTable": "DataEntryTable",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=darenadatalakedev1;AccountKey=3Kb3zBLtVrJw3MdkXSavBEFPQ0gS9oL28yUkTgsy1+Rlb9E+Vzi7M6ZovY+B8ZVgCVtInGKrzXQ5yTt3lcpDHA==;EndpointSuffix=core.windows.net",
+    "AzureUploadsRepository": "upload-repository/Patients/{0}/PatientUpload/{1}"
+
+  }
+}
