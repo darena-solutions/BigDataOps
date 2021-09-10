@@ -80,6 +80,7 @@ namespace BigData.Container.Create
 
 
             string currentDateDirectory = DateTime.Now.ToString("yyyyMMdd");
+
             DataLakeDirectoryClient directoryClient = await _fileSystemClient.CreateDirectoryAsync(currentDateDirectory);
 
             DataLakeFileClient dataLakeFileClient = directoryClient.GetFileClient(resourceType + ".json");

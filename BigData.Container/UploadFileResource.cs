@@ -29,13 +29,16 @@ namespace BigData.Container.Create
         {
             log.LogInformation("Trigger: UploadFileResource");
 
-//            string _dataLakeConnectionString = Environment.GetEnvironmentVariable("Values:AzureWebJobsStorage", EnvironmentVariableTarget.Process);
-//            string _uploadLogTrackingTable = Environment.GetEnvironmentVariable("Values:AzureUploadsLogTable", EnvironmentVariableTarget.Process);
-//            string _uploadRepoPath = Environment.GetEnvironmentVariable("Values:AzureUploadsRepository", EnvironmentVariableTarget.Process);
+            string _dataLakeConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
+            string _uploadLogTrackingTable = Environment.GetEnvironmentVariable("AzureUploadsLogTable", EnvironmentVariableTarget.Process);
+            string _uploadRepoPath = Environment.GetEnvironmentVariable("AzureUploadsRepository", EnvironmentVariableTarget.Process);
+            log.LogInformation("UploadFileResource: "+ _dataLakeConnectionString);
+            log.LogInformation("UploadFileResource: "+ _uploadLogTrackingTable);
+            log.LogInformation("UploadFileResource: "+ _uploadRepoPath);
 
-            string _dataLakeConnectionString = "DefaultEndpointsProtocol=https;AccountName=darenadatalakedev1;AccountKey=3Kb3zBLtVrJw3MdkXSavBEFPQ0gS9oL28yUkTgsy1+Rlb9E+Vzi7M6ZovY+B8ZVgCVtInGKrzXQ5yTt3lcpDHA==;EndpointSuffix=core.windows.net";
-            string _uploadLogTrackingTable = "FileUploadLogTable";
-            string _uploadRepoPath = "upload-repository/Patients/{0}/PatientUpload/{1}";
+            //            string _dataLakeConnectionString = "DefaultEndpointsProtocol=https;AccountName=darenadatalakedev1;AccountKey=3Kb3zBLtVrJw3MdkXSavBEFPQ0gS9oL28yUkTgsy1+Rlb9E+Vzi7M6ZovY+B8ZVgCVtInGKrzXQ5yTt3lcpDHA==;EndpointSuffix=core.windows.net";
+            //            string _uploadLogTrackingTable = "FileUploadLogTable";
+            //            string _uploadRepoPath = "upload-repository/Patients/{0}/PatientUpload/{1}";
 
             DataLakeServiceClient _dataLakeServiceClient = new DataLakeServiceClient(_dataLakeConnectionString);
             DataLakeFileSystemClient _dataLakeFileSystemClient = _dataLakeServiceClient.GetFileSystemClient(containerName);
@@ -46,15 +49,16 @@ namespace BigData.Container.Create
 
             foreach (IFormFile file in formdata.Files)
             {
+                string fileResourceId = resourceId + "_" + Guid.NewGuid().ToString();
                 string resPath = GenerateStoragePathPatientUploads(_uploadRepoPath, resourceId, file.FileName);
 
                 var r = UploadFileToLake(_dataLakeFileSystemClient, file, resPath);
-
-                resp.Add(string.Format("File:{0}; Status:{1}", file.FileName, r.ToString()));
+                if(r)
+                    resp.Add(string.Format("File:{0}; ResourceId:{1}", file.FileName, fileResourceId));
 
                 if (!r)
                     allPass = false;
-                await MakeUploadLogEntry(_dataLakeConnectionString, _uploadLogTrackingTable, containerName, resourceId, file.FileName, file.ContentType, "Upload:"+r.ToString(), resPath);
+                await MakeUploadLogEntry(_dataLakeConnectionString, _uploadLogTrackingTable, containerName, resourceId, fileResourceId, file.FileName, file.ContentType, "Upload:"+r.ToString(), resPath);
             }
             if (allPass)
             {
@@ -93,13 +97,13 @@ namespace BigData.Container.Create
             }
         }
 
-        private static async Task MakeUploadLogEntry(string dataLakeConnectionString, string _Table, string containerName, string resourceId, string resourceName, string resourceType,string Status, string resourcePath)
+        private static async Task MakeUploadLogEntry(string dataLakeConnectionString, string _Table, string containerName, string resourceId, string fileResourceId, string resourceName, string resourceType,string Status, string resourcePath)
         {
             CloudStorageAccount _cloudStorageAccount = CloudStorageAccount.Parse(dataLakeConnectionString);
             CloudTableClient tableClient = _cloudStorageAccount.CreateCloudTableClient(new TableClientConfiguration());
             CloudTable table = tableClient.GetTableReference(_Table);
 
-            ResourceUploadLogEntity uploadLogEntity = new ResourceUploadLogEntity(containerNamePK: containerName.ToString(), resourceIdRK: resourceId+ "_"+ Guid.NewGuid().ToString())
+            ResourceUploadLogEntity uploadLogEntity = new ResourceUploadLogEntity(containerNamePK: containerName.ToString(), resourceIdRK: fileResourceId)
             {
                 ContainerName = containerName.ToString(),
                 ResourceId = resourceId ,

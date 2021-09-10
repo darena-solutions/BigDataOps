@@ -30,11 +30,11 @@ namespace BigData.Container.Create
         {
             log.LogInformation("Trigger: QueryFileResource");
 
-//            string _dataLakeConnectionString = Environment.GetEnvironmentVariable("Values:AzureWebJobsStorage", EnvironmentVariableTarget.Process);
-//            string _uploadLogTrackingTable = Environment.GetEnvironmentVariable("Values:AzureUploadsLogTable", EnvironmentVariableTarget.Process);
+            string _dataLakeConnectionString = Environment.GetEnvironmentVariable("Values:AzureWebJobsStorage", EnvironmentVariableTarget.Process);
+            string _uploadLogTrackingTable = Environment.GetEnvironmentVariable("Values:AzureUploadsLogTable", EnvironmentVariableTarget.Process);
 
-            string _dataLakeConnectionString = "DefaultEndpointsProtocol=https;AccountName=darenadatalakedev1;AccountKey=3Kb3zBLtVrJw3MdkXSavBEFPQ0gS9oL28yUkTgsy1+Rlb9E+Vzi7M6ZovY+B8ZVgCVtInGKrzXQ5yTt3lcpDHA==;EndpointSuffix=core.windows.net";
-            string _uploadLogTrackingTable = "FileUploadLogTable";
+//            string _dataLakeConnectionString = "DefaultEndpointsProtocol=https;AccountName=darenadatalakedev1;AccountKey=3Kb3zBLtVrJw3MdkXSavBEFPQ0gS9oL28yUkTgsy1+Rlb9E+Vzi7M6ZovY+B8ZVgCVtInGKrzXQ5yTt3lcpDHA==;EndpointSuffix=core.windows.net";
+//            string _uploadLogTrackingTable = "FileUploadLogTable";
 
             return new OkObjectResult(FindResourcesById(_dataLakeConnectionString, _uploadLogTrackingTable, containerName, resourceId));
 

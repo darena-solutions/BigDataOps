@@ -42,7 +42,7 @@ namespace BigData.Container.Create
     {
         public string ResourceType { get; set; }
         public string ResourceId { get; set; }
-        public string Resource { get; set; }
+        public JObject Resource { get; set; }
     }
 
     public class ResourceUploadLogEntity : TableEntity

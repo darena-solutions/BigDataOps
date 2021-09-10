@@ -13,6 +13,7 @@ using System.Text;
 using Microsoft.Azure.Cosmos.Table;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using Newtonsoft.Json.Linq;
 
 namespace BigData.Container.Create
 {
@@ -141,7 +142,7 @@ namespace BigData.Container.Create
                             {
                                 ResourceType = reader.GetString(0),
                                 ResourceId = reader.GetString(1),
-                                Resource = reader.GetString(2)
+                                Resource = JObject.Parse(reader.GetString(2))
                             };
                             queryResult.Add(qResp);
                         }

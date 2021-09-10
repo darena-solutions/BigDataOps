@@ -13,7 +13,6 @@ using System.Text;
 using Microsoft.Azure.Cosmos.Table;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using System.Net.Http;
 using System.Net;
 
@@ -24,7 +23,7 @@ namespace BigData.Container.Create
         private static Guid guidContainerName;
 
         [FunctionName("DownloadFileResourceById")]
-        public static async Task<HttpResponseMessage> Run(
+        public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "DownloadFileResourceById/{containerName?}/{resourceEntityId?}")] HttpRequest req,
             string containerName,
             string resourceEntityId,
@@ -33,11 +32,11 @@ namespace BigData.Container.Create
         {
             log.LogInformation("Trigger: QueryFileResource");
 
-//            string _dataLakeConnectionString = Environment.GetEnvironmentVariable("Values:AzureWebJobsStorage", EnvironmentVariableTarget.Process);
-//            string _uploadLogTrackingTable = Environment.GetEnvironmentVariable("Values:AzureUploadsLogTable", EnvironmentVariableTarget.Process);
+            string _dataLakeConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
+           string _uploadLogTrackingTable = Environment.GetEnvironmentVariable("AzureUploadsLogTable", EnvironmentVariableTarget.Process);
 
-            string _dataLakeConnectionString = "DefaultEndpointsProtocol=https;AccountName=darenadatalakedev1;AccountKey=3Kb3zBLtVrJw3MdkXSavBEFPQ0gS9oL28yUkTgsy1+Rlb9E+Vzi7M6ZovY+B8ZVgCVtInGKrzXQ5yTt3lcpDHA==;EndpointSuffix=core.windows.net";
-            string _uploadLogTrackingTable = "FileUploadLogTable";
+//            string _dataLakeConnectionString = "DefaultEndpointsProtocol=https;AccountName=darenadatalakedev1;AccountKey=3Kb3zBLtVrJw3MdkXSavBEFPQ0gS9oL28yUkTgsy1+Rlb9E+Vzi7M6ZovY+B8ZVgCVtInGKrzXQ5yTt3lcpDHA==;EndpointSuffix=core.windows.net";
+//            string _uploadLogTrackingTable = "FileUploadLogTable";
 
             DataLakeServiceClient _dataLakeServiceClient = new DataLakeServiceClient(_dataLakeConnectionString);
             DataLakeFileSystemClient _dataLakeFileSystemClient = _dataLakeServiceClient.GetFileSystemClient(containerName);
@@ -48,25 +47,39 @@ namespace BigData.Container.Create
 
             var linqQuery = table.CreateQuery<ResourceUploadLogEntity>()
             .Where(x => x.RowKey == resourceEntityId && x.PartitionKey == containerName)
-            .Select(x => new ResourceUploadLogEntity()
-            {
-                ResourcePath = x.ResourcePath,
-                ResourceType = x.ResourceType,
-                ResourceName = x.ResourceName
-            }).First();
+            .FirstOrDefault();
 
+            if (linqQuery == null)
+                return new BadRequestObjectResult("Requested Resource Entity not found: "+ resourceEntityId);
 
 
             DataLakeFileClient file = _dataLakeFileSystemClient.GetFileClient(linqQuery.ResourcePath);
 
             var prop = file.GetProperties();
 
-            Stream fileContents = file.OpenRead();
-            return new HttpResponseMessage()
+            Stream fileContents = GetFileResourceByPath(_dataLakeFileSystemClient, linqQuery.ResourcePath);
+            using (var memoryStream = new MemoryStream())
             {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StreamContent(file.OpenRead())
-            };
+                fileContents.CopyTo(memoryStream);
+                return new FileContentResult(memoryStream.ToArray(), contentType: linqQuery.ResourceType);
+            }
+            
+
+            //return new HttpResponseMessage()
+            //{
+            //    StatusCode = HttpStatusCode.OK,
+            //    Content = new StreamContent(file.OpenRead())
+            //};
+
+        }
+
+        private static Stream GetFileResourceByPath(DataLakeFileSystemClient filesysClient , string resourcePath)
+        {
+            DataLakeFileClient file = filesysClient.GetFileClient(resourcePath);
+
+            var prop = file.GetProperties();
+
+            return file.OpenRead();
 
         }
         private static IQueryable<ResourceUploadLogQuery> FindResourcesById(string dataLakeConnectionString, string _dataLogTrackingTable, string containerName, string resourceId)
