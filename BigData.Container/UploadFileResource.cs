@@ -29,16 +29,16 @@ namespace BigData.Container.Create
         {
             log.LogInformation("Trigger: UploadFileResource");
 
-            string _dataLakeConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
-            string _uploadLogTrackingTable = Environment.GetEnvironmentVariable("AzureUploadsLogTable", EnvironmentVariableTarget.Process);
-            string _uploadRepoPath = Environment.GetEnvironmentVariable("AzureUploadsRepository", EnvironmentVariableTarget.Process);
-            log.LogInformation("UploadFileResource: "+ _dataLakeConnectionString);
-            log.LogInformation("UploadFileResource: "+ _uploadLogTrackingTable);
-            log.LogInformation("UploadFileResource: "+ _uploadRepoPath);
+            //string _dataLakeConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
+            //string _uploadLogTrackingTable = Environment.GetEnvironmentVariable("AzureUploadsLogTable", EnvironmentVariableTarget.Process);
+            //string _uploadRepoPath = Environment.GetEnvironmentVariable("AzureUploadsRepository", EnvironmentVariableTarget.Process);
+            //log.LogInformation("UploadFileResource: "+ _dataLakeConnectionString);
+            //log.LogInformation("UploadFileResource: "+ _uploadLogTrackingTable);
+            //log.LogInformation("UploadFileResource: "+ _uploadRepoPath);
 
-            //            string _dataLakeConnectionString = "DefaultEndpointsProtocol=https;AccountName=darenadatalakedev1;AccountKey=3Kb3zBLtVrJw3MdkXSavBEFPQ0gS9oL28yUkTgsy1+Rlb9E+Vzi7M6ZovY+B8ZVgCVtInGKrzXQ5yTt3lcpDHA==;EndpointSuffix=core.windows.net";
-            //            string _uploadLogTrackingTable = "FileUploadLogTable";
-            //            string _uploadRepoPath = "upload-repository/Patients/{0}/PatientUpload/{1}";
+            string _dataLakeConnectionString = "DefaultEndpointsProtocol=https;AccountName=darenadatalakedev1;AccountKey=3Kb3zBLtVrJw3MdkXSavBEFPQ0gS9oL28yUkTgsy1+Rlb9E+Vzi7M6ZovY+B8ZVgCVtInGKrzXQ5yTt3lcpDHA==;EndpointSuffix=core.windows.net";
+            string _uploadLogTrackingTable = "FileUploadLogTable";
+            string _uploadRepoPath = "upload-repository/Patients/{0}/PatientUpload/{1}";
 
             DataLakeServiceClient _dataLakeServiceClient = new DataLakeServiceClient(_dataLakeConnectionString);
             DataLakeFileSystemClient _dataLakeFileSystemClient = _dataLakeServiceClient.GetFileSystemClient(containerName);

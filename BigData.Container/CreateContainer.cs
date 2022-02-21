@@ -26,7 +26,7 @@ namespace BigData.Container.Create
         {
             log.LogInformation("Trigger for Creating a Container!");
 
-            /*
+
             var _config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
@@ -36,10 +36,10 @@ namespace BigData.Container.Create
             string dataLakeConnectionString = _config["Values:AzureWebJobsStorage"];
             string _dataLogTrackingTable = _config["Values:AzureWebJobsLogTable"];
             string _fileUploadLogTrackingTable = _config["Values:AzureUploadsLogTable"];
-            */
-            string dataLakeConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
-            string _dataLogTrackingTable = Environment.GetEnvironmentVariable("AzureWebJobsLogTable", EnvironmentVariableTarget.Process);
-            string _fileUploadLogTrackingTable = Environment.GetEnvironmentVariable("AzureUploadsLogTable", EnvironmentVariableTarget.Process);
+
+            //string dataLakeConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
+            //string _dataLogTrackingTable = Environment.GetEnvironmentVariable("AzureWebJobsLogTable", EnvironmentVariableTarget.Process);
+            //string _fileUploadLogTrackingTable = Environment.GetEnvironmentVariable("AzureUploadsLogTable", EnvironmentVariableTarget.Process);
 
             DataLakeServiceClient _dataLakeServiceClient = new DataLakeServiceClient(dataLakeConnectionString);
 

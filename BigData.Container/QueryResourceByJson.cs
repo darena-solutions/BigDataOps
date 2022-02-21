@@ -31,20 +31,20 @@ namespace BigData.Container.Create
             ILogger log)
         {
             log.LogInformation("Create Resource Object Initiated");
-            /*
+
             var _config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
-             ConfigureSynapseConnection(_config["Values:SynapzeConnString"]);
+            ConfigureSynapseConnection(_config["Values:SynapzeConnString"]);
 
-             */
-            string _dataLogTrackingTable = Environment.GetEnvironmentVariable("AzureWebJobsLogTable", EnvironmentVariableTarget.Process);
-            string _synapzeConnString = Environment.GetEnvironmentVariable("SynapzeConnString", EnvironmentVariableTarget.Process);
 
-            ConfigureSynapseConnection(_synapzeConnString);
+            //string _dataLogTrackingTable = Environment.GetEnvironmentVariable("AzureWebJobsLogTable", EnvironmentVariableTarget.Process);
+            //string _synapzeConnString = Environment.GetEnvironmentVariable("SynapzeConnString", EnvironmentVariableTarget.Process);
+
+            //ConfigureSynapseConnection(_synapzeConnString);
 
             string queryString = req.QueryString.ToString();
 

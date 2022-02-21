@@ -39,12 +39,12 @@ namespace BigData.Container.Create
                 .AddEnvironmentVariables()
                 .Build();
 
-            //string dataLakeConnectionString = _config["Values:AzureWebJobsStorage"];
-            //string _dataLogTrackingTable = _config["Values:AzureWebJobsLogTable"];
-            //string _synapzeConnString = _config["Values:SynapzeConnString"];
-            
-            string _dataLogTrackingTable = Environment.GetEnvironmentVariable("AzureWebJobsLogTable", EnvironmentVariableTarget.Process);
-            string _synapzeConnString = Environment.GetEnvironmentVariable("SynapzeConnString", EnvironmentVariableTarget.Process);
+            string dataLakeConnectionString = _config["Values:AzureWebJobsStorage"];
+            string _dataLogTrackingTable = _config["Values:AzureWebJobsLogTable"];
+            string _synapzeConnString = _config["Values:SynapzeConnString"];
+
+            //string _dataLogTrackingTable = Environment.GetEnvironmentVariable("AzureWebJobsLogTable", EnvironmentVariableTarget.Process);
+            //string _synapzeConnString = Environment.GetEnvironmentVariable("SynapzeConnString", EnvironmentVariableTarget.Process);
 
             ConfigureSynapseConnection(_synapzeConnString);
             operatorMap = new Dictionary<string, string>();
